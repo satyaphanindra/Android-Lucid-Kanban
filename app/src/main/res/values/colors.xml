@@ -5,4 +5,6 @@
     <color name="colorAccent">#D81B60</color>
 
     <color name="jetBlack">#0a0a0a</color>
+    <color name="white">#FFFFFF</color>
+
 </resources>
