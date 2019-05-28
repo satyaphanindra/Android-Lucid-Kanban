@@ -6,6 +6,7 @@
 
     <color name="jetBlack">#0a0a0a</color>
     <color name="white">#FFFFFF</color>
-
+    <color name="lightGray">#D3D3D3</color>
+    <color name="lightPurple">#C4AAD9</color>
 
 </resources>
