@@ -1,6 +1,8 @@
 package com.citta.lucidkanban.model;
 
-public class Task {
+import java.io.Serializable;
+
+public class Task implements Serializable {
     public String taskId;
     public String taskTitle;
     public String taskDescription;

@@ -1,12 +1,14 @@
 package com.citta.lucidkanban.model;
 
-public class Card {
+import java.io.Serializable;
 
- private Member member;
- private Task task;
- private Boolean isCardAssigned;
- private CardPriority cardPriority;
- private CardStatus cardStatus;
+public class Card implements Serializable {
+
+ public Member member;
+ public Task task;
+ public Boolean isCardAssigned;
+ public CardPriority cardPriority;
+ public CardStatus cardStatus;
 
 
  public Card(Member member, Task task, CardPriority cardPriority,
@@ -30,11 +32,11 @@ public class Card {
  public static class forEnum
  {
 
-     private enum CardPriority  {LOW, MEDIUM, HIGH;}
-     private enum CardStatus { Todo, InProgress, Done}
+     public enum CardPriority  {LOW, MEDIUM, HIGH;}
+     public enum CardStatus { Todo, InProgress, Done}
 
-     private CardPriority severityLevel;
-     private CardStatus progressStage;
+     public CardPriority severityLevel;
+     public CardStatus progressStage;
 
      public void onSelectPriority(){
          switch (severityLevel){

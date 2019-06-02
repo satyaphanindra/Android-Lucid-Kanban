@@ -1,10 +1,12 @@
 package com.citta.lucidkanban.model;
 
-public class Member {
-    private String memberName;
-    private String memberEmail;
-    private String memberEmployeeId;
-    private int memberImage;
+import java.io.Serializable;
+
+public class Member implements Serializable {
+    public String memberName;
+    public String memberEmail;
+    public String memberEmployeeId;
+    public int memberImage;
 
     public Member(
             String memberName,
