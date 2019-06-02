@@ -1,14 +1,17 @@
-package com.citta.lucidkanban.Model;
-
-import android.media.Image;
+package com.citta.lucidkanban.model;
 
 public class Member {
     private String memberName;
     private String memberEmail;
     private String memberEmployeeId;
-    private Image memberImage;
+    private int memberImage;
 
-    public Member(String memberName, String memberEmail, String memberEmployeeId, Image memberImage)
+    public Member(
+            String memberName,
+            String memberEmail,
+            String memberEmployeeId,
+            int memberImage
+    )
     {
         this.memberName = memberName;
         this.memberEmail = memberEmail;

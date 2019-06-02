@@ -7,6 +7,8 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="tasks_title">Welcome to Lucid Tasks!</string>
+    <string name="main_welcome_title">Welcome to Lucid Kanban!</string>
+    <string name="main_subtitle">Check your Lucid Tasks</string>
     <string name="tasks_subtitle">List of tasks available</string>
     <string name="title">Title</string>
     <string name="add_task">Add a Task</string>

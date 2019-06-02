@@ -68,6 +68,4 @@
         android:layout_centerHorizontal="true"
         android:text="Save"
         />
-
-
 </RelativeLayout>
