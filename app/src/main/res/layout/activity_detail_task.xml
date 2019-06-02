@@ -42,6 +42,7 @@
             android:hint="@string/title"
             android:layout_toEndOf="@id/task_photo"/>
     </RelativeLayout>
+
     <EditText
         android:id="@+id/task_description_view"
         android:inputType="textMultiLine"
@@ -53,19 +54,32 @@
         android:layout_marginBottom="16dp"
         android:hint="@string/short_description"
         android:layout_below="@id/image_and_title"/>
-    <CheckBox
-        android:id="@+id/checkbox"
+
+
+    <Spinner
+        android:id="@+id/spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/add_task_to_kanban"
-        android:layout_below="@id/task_description_view"/>
+        android:layout_below="@+id/task_description_view"/>
+
+    <EditText
+        android:id="@+id/task_Date"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:clickable="true"
+        android:focusable="false"
+        android:editable="false"
+        android:hint="Date"
+        android:layout_below="@+id/spinner"
+        android:layout_marginHorizontal="5dp"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        android:layout_below="@id/checkbox"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"
         android:text="Save"
+        android:layout_alignParentBottom="true"
         />
 </RelativeLayout>
