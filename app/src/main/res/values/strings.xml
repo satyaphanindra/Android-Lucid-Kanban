@@ -15,4 +15,5 @@
     <string name="short_description">Short Description</string>
     <string name="add_task_to_kanban">Add task to Kanban Board</string>
     <string name="task_status">Status:</string>
+    <string name="date_time"><![CDATA[Date & Time:]]></string>
 </resources>

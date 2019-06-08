@@ -25,8 +25,8 @@ import java.util.List;
 public class TaskDetailActivity extends Activity implements AdapterView.OnItemSelectedListener {
     private Spinner taskStatusDropdownBar;
     private static final String[] paths = {"NONE", "TODO", "IN PROGRESS", "COMPLETED"};
-    private ImageView taskImage, closeTask, saveTask, taskDate;
-    private TextView taskTitle, taskDescription, editTask;
+    private ImageView taskImage, closeTask, saveTask, taskDate, editTask;
+    private TextView taskTitle, taskDescription;
     private List<Task> itemList;
 
     @Override
@@ -35,14 +35,14 @@ public class TaskDetailActivity extends Activity implements AdapterView.OnItemSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_task);
         int position = getIntent().getExtras().getInt("itemNumber");
-        taskImage = findViewById(R.id.task_photo);
+        taskImage = findViewById(R.id.task_image_bar);
         taskTitle = findViewById(R.id.task_title_view);
         taskDescription = findViewById(R.id.task_description_view);
-        taskDate = findViewById(R.id.task_date_view);
+        taskDate = findViewById(R.id.date_time_bar);
         taskStatusDropdownBar = (Spinner) findViewById(R.id.task_status_dropdown);
-        saveTask = findViewById(R.id.save_task_view);
-        closeTask = findViewById(R.id.close_task_view);
-        editTask = findViewById(R.id.edit_task_view);
+        saveTask = findViewById(R.id.save_task_bar);
+        closeTask = findViewById(R.id.close_task_bar);
+        editTask = findViewById(R.id.edit_task_bar);
 
         final Storage storage= new Storage(TaskDetailActivity.this);
 //        List<Task> itemList = (List<Task>) storage.retrieve("File", Storage.Directory.Documents);

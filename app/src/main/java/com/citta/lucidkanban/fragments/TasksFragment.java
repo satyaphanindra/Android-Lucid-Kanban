@@ -127,7 +127,7 @@ public class TasksFragment extends Fragment {
 
             taskTitleLabel = itemView.findViewById(R.id.taskTitle);
             taskDescLabel = itemView.findViewById(R.id.taskDescription);
-            taskDateLabel = itemView.findViewById(R.id.taskDate);
+            taskDateLabel = itemView.findViewById(R.id.task_Date);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

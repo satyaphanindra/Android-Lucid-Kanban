@@ -1,173 +1,216 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/lightGray"
+    android:orientation="vertical">
+
     <RelativeLayout
+        android:id="@+id/app_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:popupTheme="@style/AppTheme.PopupOverlay"/>
+        android:layout_height="wrap_content">
 
-        <RelativeLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-            <ImageView
-                android:id="@+id/close_task_view"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_marginLeft="4dp"
-                android:layout_centerVertical="true"
-                android:layout_marginTop="4dp"
-                android:src="@drawable/task_close"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/add_task"
-                android:textColor="@color/white"
-                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"/>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="4dp"
-                android:layout_marginRight="4dp">
-
-                <TextView
-                    android:id="@+id/edit_task_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="4dp"
-                    android:textColor="@color/white"
-                    android:visibility="gone"
-                    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-                    android:text="EDIT" />
-
-                <ImageView
-                    android:id="@+id/save_task_view"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:src="@drawable/save_task"/>
-
-            </LinearLayout>
-
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/image_and_title"
+        <TextView
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="@string/add_task"
+            android:textColor="@color/white" />
+
+        <ImageView
+            android:id="@+id/close_task_bar"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/task_close" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/app_toolbar"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginHorizontal="10dp"
-            android:layout_below="@+id/toolbar">
-            <ImageView
-                android:id="@+id/task_photo"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/add_photo"
-                android:background="@drawable/rounded_rectangle"
-                android:backgroundTint="@color/colorPrimary"/>
-            <EditText
-                android:id="@+id/task_title_view"
-                android:inputType="textMultiLine"
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:layout_marginLeft="10dp"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="4dp"
-                android:layout_centerVertical="true"
-                android:hint="@string/title"
-                android:background="@drawable/rounded_rectangle"
-                android:layout_toEndOf="@id/task_photo"/>
-         </RelativeLayout>
+            android:fontFamily="@font/roboto_medium"
+            android:text="Title:"
+            android:textColor="@color/jetBlack"
+            android:textSize="@dimen/element_spacing_medium" />
+
+        <EditText
+            android:id="@+id/task_title_view"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/rounded_rectangle"
+            android:fontFamily="@font/roboto_medium"
+            android:hint="@string/title"
+            android:inputType="textMultiLine"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="4dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Task Description:"
+            android:textColor="@color/jetBlack"
+            android:textSize="@dimen/element_spacing_medium" />
 
         <EditText
             android:id="@+id/task_description_view"
-            android:inputType="textMultiLine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="8dp"
-            android:layout_marginHorizontal="10dp"
-            android:paddingHorizontal="4dp"
-            android:paddingVertical="4dp"
-            android:minHeight="100dp"
-            android:hint="@string/short_description"
-            android:gravity="top"
+            android:layout_marginTop="8dp"
             android:background="@drawable/rounded_rectangle"
-            android:layout_below="@id/image_and_title"/>
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="top"
+            android:hint="@string/short_description"
+            android:inputType="textMultiLine"
+            android:minHeight="280dp"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="4dp" />
 
         <RelativeLayout
-            android:id="@+id/status_and_date_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:layout_marginBottom="8dp"
-            android:layout_below="@id/task_description_view">
+            android:layout_marginTop="20dp">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/status_bar"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_alignParentEnd="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Task Status:"
+                android:textColor="@color/jetBlack"
+                android:textSize="@dimen/element_spacing_medium" />
+
+            <Spinner
+                android:id="@+id/task_status_dropdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="20dp" />
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/roboto_medium"
+            android:text="@string/date_time"
+            android:textColor="@color/jetBlack"
+            android:textSize="@dimen/element_spacing_medium" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/task_Date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Date:"
+                android:textColor="@color/jetBlack" />
+
+            <TextView
+                android:id="@+id/task_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/task_Date"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Time:"
+                android:textColor="@color/jetBlack" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true">
 
                 <TextView
-                    android:id="@+id/task_status"
+                    android:id="@+id/task_date_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/task_status"
-                    android:textColor="@color/jetBlack"
                     android:fontFamily="@font/roboto_medium"
-                    android:textSize="16dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_alignEnd="@id/task_status_dropdown"/>
+                    android:text="select date" />
 
-                <Spinner
-                    android:id="@+id/task_status_dropdown"
+                <TextView
+                    android:id="@+id/task_time_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"/>
-
-
-
-
-            </LinearLayout>
-
-
-
-            <!--<TextView
-                android:id="@+id/task_Date"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:clickable="true"
-                android:focusable="false"
-                android:editable="false"
-                android:hint="Date"
-                android:gravity="right"
-                android:layout_alignParentEnd="true"
-                android:layout_marginHorizontal="5dp"/>-->
-            <ImageView
-                android:id="@+id/task_date_view"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/date_task"
-                android:backgroundTint="@color/colorPrimary"
-                android:background="@drawable/rounded_rectangle"/>
+                    android:layout_marginTop="28dp"
+                    android:fontFamily="@font/roboto_medium"
+                    android:text="select time" />
+            </RelativeLayout>
 
         </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/colorPrimary"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/task_image_bar"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_margin="10dp"
+            android:src="@drawable/add_photo" />
+
+        <ImageView
+            android:id="@+id/date_time_bar"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:src="@drawable/date_task" />
+
+        <ImageView
+            android:id="@+id/save_task_bar"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
+            android:src="@drawable/save_task" />
+
+        <ImageView
+            android:id="@+id/edit_task_bar"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
+            android:src="@drawable/edit_task"
+            android:visibility="gone" />
 
 
-        </RelativeLayout>
+    </RelativeLayout>
 
-</ScrollView>
+
+</RelativeLayout>
