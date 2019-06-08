@@ -18,6 +18,7 @@ public class DummyDataProvider {
 	//System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
 
 
-    public List<Task> tasks = Arrays.asList(new Task("1", "SampleTask1", "this is a sample task 1", dateFormat.format(date), 12 ),
-            new Task("2", "SampleTask2", "this is a sample task 2", dateFormat.format(date), 12 ));
+    public List<Task> tasks = Arrays.asList(new Task(1, "SampleTask1", "this is a sample task 1", dateFormat.format(date) ),
+            new Task(2, "SampleTask2", "this is a sample task 2", dateFormat.format(date) ),
+            new Task(3, "SampleTas3", "This is a sample task 3", dateFormat.format(date)));
 }

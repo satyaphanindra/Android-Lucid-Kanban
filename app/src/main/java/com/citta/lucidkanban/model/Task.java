@@ -1,20 +1,22 @@
 package com.citta.lucidkanban.model;
 
+import android.widget.ImageView;
+
 import java.io.Serializable;
 
 public class Task implements Serializable {
-    public String taskId;
+    public int taskId;
     public String taskTitle;
     public String taskDescription;
     public String taskDate;
-    public int taskImage;
+//    public ImageView taskImage;
 
-    public Task(String taskId, String taskTitle, String taskDescription, String taskDate, int taskImage)
+    public Task(int taskId, String taskTitle, String taskDescription, String taskDate)
     {
         this.taskId = taskId;
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.taskDate = taskDate;
-        this.taskImage = taskImage;
+//        this.taskImage = taskImage;
     }
 }
