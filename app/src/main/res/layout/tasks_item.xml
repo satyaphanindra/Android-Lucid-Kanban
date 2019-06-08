@@ -1,65 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/element_spacing_xsmall"
+    android:layout_marginTop="@dimen/element_spacing_micro"
+    android:layout_marginEnd="@dimen/element_spacing_xsmall"
+    android:layout_marginBottom="@dimen/element_spacing_micro"
     android:background="@drawable/rounded_background"
-    android:padding="@dimen/element_spacing_medium"
-    android:layout_margin="@dimen/element_spacing_medium"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/taskTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/element_spacing_medium"
-        android:fontFamily="@font/roboto_medium"
-        android:textColor="@color/jetBlack"
-        android:text="Title" />
-
-    <TextView
-        android:id="@+id/taskDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/element_spacing_normal"
-        android:textSize="@dimen/text_size_medium_small"
-        android:fontFamily="@font/roboto_regular"
-        android:textColor="@color/jetBlack"
-        android:text="description" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="@dimen/element_spacing_normal"
-        android:background="@color/lightPurple"/>
+    android:orientation="horizontal"
+    android:padding="@dimen/element_spacing_xxsmall"
+    android:weightSum="10">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/element_spacing_normal"
-        android:orientation="horizontal">
+        android:layout_weight="7"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/task_time"
-            android:layout_width="0dp"
+            android:id="@+id/taskTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="@dimen/text_size_small"
-            android:fontFamily="@font/roboto_regular"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Title"
+            android:maxLines="1"
             android:textColor="@color/jetBlack"
-            android:gravity="center"
-            android:text="Time" />
+            android:textSize="@dimen/text_size_medium" />
 
         <TextView
-            android:id="@+id/task_Date"
-            android:layout_width="0dp"
+            android:id="@+id/taskDescription"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="@dimen/text_size_small"
-            android:fontFamily="@font/roboto_regular"
+            android:layout_marginTop="@dimen/element_spacing_micro"
+            android:fontFamily="@font/roboto_light"
+            android:text="description"
+            android:maxLines="2"
             android:textColor="@color/jetBlack"
-            android:gravity="center"
-            android:text="Date" />
+            android:textSize="@dimen/text_size_small" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/element_spacing_micro"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/task_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/roboto_light"
+                android:gravity="center"
+                android:text="Time"
+                android:textColor="@color/jetBlack"
+                android:textSize="@dimen/text_size_xsmall" />
+
+            <TextView
+                android:id="@+id/task_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/roboto_light"
+                android:gravity="center"
+                android:text="Date"
+                android:textColor="@color/jetBlack"
+                android:textSize="@dimen/text_size_xsmall" />
+        </LinearLayout>
     </LinearLayout>
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:background="@color/lightPurple" />
 
 </LinearLayout>

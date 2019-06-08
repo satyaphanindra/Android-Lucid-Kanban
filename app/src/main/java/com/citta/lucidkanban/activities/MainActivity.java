@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity
     private boolean isClickedNewTask = false;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +55,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_tasks);
     }
 
 
@@ -101,11 +101,7 @@ public class MainActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        switch (id){
-            case R.id.nav_tasks:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new TasksFragment()).commit();
-        }
+        setFragments(id);
 
         /********if (id == R.id.nav_camera) {
             // Handle the camera action
@@ -124,5 +120,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void setFragments(int id) {
+        switch (id){
+            case R.id.nav_tasks:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new TasksFragment()).commit();
+        }
     }
 }

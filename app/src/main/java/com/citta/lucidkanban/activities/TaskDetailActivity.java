@@ -1,9 +1,9 @@
 package com.citta.lucidkanban.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -14,20 +14,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.citta.lucidkanban.R;
-import com.citta.lucidkanban.data.Storage;
-import com.citta.lucidkanban.model.DummyDataProvider;
+import com.citta.lucidkanban.managers.TaskManager;
 import com.citta.lucidkanban.model.Task;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class TaskDetailActivity extends Activity implements AdapterView.OnItemSelectedListener {
+public class TaskDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Spinner taskStatusDropdownBar;
     private static final String[] paths = {"NONE", "TODO", "IN PROGRESS", "COMPLETED"};
     private ImageView taskImage, closeTask, saveTask, taskDate, editTask;
     private TextView taskTitle, taskDescription;
-    private List<Task> itemList;
+    private Task itemTask;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,16 +41,11 @@ public class TaskDetailActivity extends Activity implements AdapterView.OnItemSe
         closeTask = findViewById(R.id.close_task_bar);
         editTask = findViewById(R.id.edit_task_bar);
 
-        final Storage storage= new Storage(TaskDetailActivity.this);
-//        List<Task> itemList = (List<Task>) storage.retrieve("File", Storage.Directory.Documents);
-
-//        final Storage storage = new Storage(TaskDetailActivity.this);
-
         spinner();
 
         final Boolean isUserClickedExistingTask = getIntent().getExtras().getBoolean("isUserClickedExistingTask");
 
-        if(isUserClickedExistingTask){
+        if (isUserClickedExistingTask) {
             showExistingTask();
 
             editTask.setOnClickListener(new View.OnClickListener() {
@@ -66,42 +58,25 @@ public class TaskDetailActivity extends Activity implements AdapterView.OnItemSe
                     taskTitle.requestFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-//                    editTask.setVisibility(View.GONE);
-//                    saveTask.setVisibility(View.VISIBLE);
-                    saveTask.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            saveTask();
-                        }
-                    });
                 }
             });
-        }
-        else {
+        } else {
         }
 
         saveTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String title = taskTitle.getText().toString();
                 String description = taskDescription.getText().toString();
 
-//                int taskId = itemList.size()+1;
+                itemTask = new Task(1, title, description, "date");
 
-//                itemList = new DummyDataProvider().tasks;
+                TaskManager.getInstance().addTaskItem(itemTask);
 
-                itemList = Arrays.asList(new Task(1, title, description, "date"));
-                storage.store(itemList, "File", Storage.Directory.Documents);
-
-
-                int taskId = itemList.size();
-                Toast toast = Toast.makeText(TaskDetailActivity.this, "Saved\n"+"Task Id: "+taskId, Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(TaskDetailActivity.this, "Saved\n" + "Task Id: " + itemTask.taskId, Toast.LENGTH_SHORT);
                 toast.show();
                 finish();
-
-                /*List<Task> itemList = new DummyDataProvider().tasks;
-                itemList.add(new Task("9", title, "c", "2/2/2020", 12));*/
             }
         });
 
@@ -112,24 +87,37 @@ public class TaskDetailActivity extends Activity implements AdapterView.OnItemSe
             }
         });
 
+    }
 
-/*
-        saveTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                storage.store(new DummyDataProvider().tasks, "File", Storage.Directory.Documents);
-            }
-        });
-        closeTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                storage.retrieve("File", Storage.Directory.Documents);
-            }
-        });*/
+    public void showExistingTask() {
+
+        List<Task> itemList = TaskManager.getInstance().tasksList;
+
+        int itemNumber = getIntent().getExtras().getInt("itemNumber");
+
+        taskTitle.setText(itemList.get(itemNumber).taskTitle);
+        taskDescription.setText(itemList.get(itemNumber).taskDescription);
+
+        taskTitle.setFocusable(false);
+        //taskTitle.setEnabled(false);
+        taskTitle.setClickable(false);
+        taskTitle.setFocusableInTouchMode(false);
+        taskTitle.requestFocus();
+
+        editTask.setVisibility(View.VISIBLE);
+        saveTask.setVisibility(View.GONE);
+
+    }
+
+    public void saveTask() {
+        TaskManager.getInstance().addTaskItem(itemTask);
+        Toast toast = Toast.makeText(TaskDetailActivity.this, "Task Saved", Toast.LENGTH_SHORT);
+        toast.show();
+        finish();
     }
 
     //drop down list to ask user where to add the task(todo , inprogress, completed)
-    public void spinner(){
+    public void spinner() {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(TaskDetailActivity.this,
                 android.R.layout.simple_spinner_item, paths);
 
@@ -137,7 +125,6 @@ public class TaskDetailActivity extends Activity implements AdapterView.OnItemSe
         taskStatusDropdownBar.setAdapter(adapter);
         taskStatusDropdownBar.setOnItemSelectedListener(this);
     }
-
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -162,23 +149,10 @@ public class TaskDetailActivity extends Activity implements AdapterView.OnItemSe
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
-    public void showExistingTask(){
+}
 
-//        List<Task> itemList = new DummyDataProvider().tasks;
 
-        Storage storage= new Storage(TaskDetailActivity.this);
-        List<Task> itemList = (List<Task>) storage.retrieve("File", Storage.Directory.Documents);
 
-        int itemNumber =getIntent().getExtras().getInt("itemNumber");
-
-        taskTitle.setText(itemList.get(itemNumber).taskTitle);
-        taskDescription.setText(itemList.get(itemNumber).taskDescription);
-
-        taskTitle.setFocusable(false);
-//        taskTitle.setEnabled(false);
-        taskTitle.setClickable(false);
-        taskTitle.setFocusableInTouchMode(false);
-        taskTitle.requestFocus();
 
         /*taskDescription.setFocusable(false);
 //        taskTitle.setEnabled(false);
@@ -206,23 +180,3 @@ public class TaskDetailActivity extends Activity implements AdapterView.OnItemSe
 
         /*InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);*/
-
-
-
-
-        editTask.setVisibility(View.VISIBLE);
-        saveTask.setVisibility(View.GONE);
-
-    }
-
-    public void saveTask(){
-        Storage storage = new Storage(TaskDetailActivity.this);
-        String title = taskTitle.getText().toString();
-        itemList = Arrays.asList(new Task(1, taskTitle.getText().toString(), taskDescription.getText().toString(), "date"));
-        storage.store(itemList, "File", Storage.Directory.Documents);
-
-        Toast toast = Toast.makeText(TaskDetailActivity.this, "Task Saved", Toast.LENGTH_SHORT);
-        toast.show();
-        finish();
-    }
-}
