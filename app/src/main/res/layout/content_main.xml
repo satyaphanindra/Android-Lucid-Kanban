@@ -47,6 +47,7 @@
 
     <FrameLayout
         android:id="@+id/fragment_container"
+        android:layout_marginTop="@dimen/element_spacing_micro"
         android:layout_below="@+id/backgroung_home"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

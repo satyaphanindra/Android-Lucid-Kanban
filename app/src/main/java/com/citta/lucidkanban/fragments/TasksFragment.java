@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.citta.lucidkanban.R;
 import com.citta.lucidkanban.activities.TaskDetailActivity;
 import com.citta.lucidkanban.data.Storage;
+import com.citta.lucidkanban.managers.TaskManager;
 import com.citta.lucidkanban.model.Task;
 
 import java.util.List;
@@ -26,16 +27,14 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 
 public class TasksFragment extends Fragment {
 
-    private RecyclerView tasksList;
+    private RecyclerView tasksRecyclerView;
     private Context taskFragmentContext;
-    Storage storage;
-
+    private List<Task> itemList;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         taskFragmentContext = context;
-        storage= new Storage(context);
     }
 
     @Nullable
@@ -43,14 +42,28 @@ public class TasksFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.tasks_fragment, container, false);
-        tasksList = view.findViewById(R.id.tasksList);
+        tasksRecyclerView = view.findViewById(R.id.tasksList);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        updateItemsListAndNotifyAdapter(false);
         initializeRecyclerView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateItemsListAndNotifyAdapter(true);
+    }
+
+    private void updateItemsListAndNotifyAdapter(Boolean notify) {
+        itemList = TaskManager.getInstance().tasksList;
+
+        if(notify)
+            tasksRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
     private void initializeRecyclerView() {
@@ -59,40 +72,27 @@ public class TasksFragment extends Fragment {
         final SectionedRecyclerViewAdapter sectionAdapter = new SectionedRecyclerViewAdapter();
 
         // Add your Sections
-        sectionAdapter.addSection(new MySection());
-
-/*        GridLayoutManager glm = new GridLayoutManager(taskFragmentContext, 2);
-        glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                switch (sectionAdapter.getSectionItemViewType(position)) {
-                    case SectionedRecyclerViewAdapter.VIEW_TYPE_HEADER:
-                        return 2;
-                    default:
-                        return 1;
-                }
-            }
-        });*/
-
-        // Set up your RecyclerView with the SectionedRecyclerViewAdapter
-        tasksList.setLayoutManager(new LinearLayoutManager(taskFragmentContext, LinearLayoutManager.VERTICAL, false));
-        tasksList.setAdapter(sectionAdapter);
+        sectionAdapter.addSection(new MySection(itemList));
+        tasksRecyclerView.setLayoutManager(new LinearLayoutManager(taskFragmentContext, LinearLayoutManager.VERTICAL, false));
+        tasksRecyclerView.setAdapter(sectionAdapter);
     }
+
+
 
     //
     // region inner structure
     //
 
     class MySection extends StatelessSection {
-        List<Task> itemList = (List<Task>) storage.retrieve("File", Storage.Directory.Documents);
 
+        private List<Task> itemList;
 
-
-        public MySection() {
+        public MySection(List<Task> itemList) {
             // call constructor with layout resources for this Section header and items
             super(SectionParameters.builder()
                     .itemResourceId(R.layout.tasks_item)
                     .build());
+            this.itemList = itemList;
         }
 
         @Override
