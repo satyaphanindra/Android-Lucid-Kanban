@@ -143,7 +143,7 @@ public class TasksFragment extends Fragment {
         public void hydrate(Task task) {
             taskTitleLabel.setText(task.taskTitle);
             taskDescLabel.setText(task.taskDescription);
-            taskDateLabel.setText(task.taskDate);
+//            taskDateLabel.setText(task.taskDate);
         }
     }
 

@@ -19,13 +19,26 @@ public class Card implements Serializable {
      this.cardPriority = cardPriority;
      this.cardStatus = cardStatus;
      this.isCardAssigned = isCardAssigned;
-
  }
 
     public enum CardPriority {LOW, MEDIUM, HIGH;}
     public enum CardStatus {TODO, INPROGRESS, COMPLETED}
 
 }
+
+/*public enum CardPriority {
+    LOW ("LOW"), MEDIUM ("MEDIUM"), HIGH ("HIGH");
+
+    private String cardPriority;
+
+    CardPriority(String cardPriority) {
+        cardPriority = cardPriority;
+    }
+
+    @Override public String toString() {
+        return cardPriority;
+    }
+}*/
 
 /*
 

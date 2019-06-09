@@ -1,5 +1,7 @@
 package com.citta.lucidkanban.activities;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,23 +10,32 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
+import android.text.format.DateFormat;
 
 import com.citta.lucidkanban.R;
 import com.citta.lucidkanban.managers.TaskManager;
+import com.citta.lucidkanban.model.Card;
 import com.citta.lucidkanban.model.Task;
 
+import java.util.Calendar;
 import java.util.List;
 
-public class TaskDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private Spinner taskStatusDropdownBar;
-    private static final String[] paths = {"NONE", "TODO", "IN PROGRESS", "COMPLETED"};
-    private ImageView taskImage, closeTask, saveTask, taskDate, editTask;
-    private TextView taskTitle, taskDescription;
+public class TaskDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
+                                        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+    private Spinner taskStatusDropdownBar ,taskPrioriyDropdownBar;
+    /*private static final String[] paths = {"NONE", "TODO", "IN PROGRESS", "COMPLETED"};
+    private static final String[] priority = {"LOW", "MEDIUM","HIGH"};*/
+    private ImageView taskImage, closeTask, saveTask, taskDateTimePicker, editTask;
+    private TextView taskTitle, taskDescription, taskDate, taskTime;
     private Task itemTask;
+    private int year, month, day, hour, minute;
+//    private int yearFinal, monthFinal, dayFinal, hoursFinal, minuteFinal;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,11 +46,14 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         taskImage = findViewById(R.id.task_image_bar);
         taskTitle = findViewById(R.id.task_title_view);
         taskDescription = findViewById(R.id.task_description_view);
-        taskDate = findViewById(R.id.date_time_bar);
+        taskDateTimePicker = findViewById(R.id.date_time_bar);
         taskStatusDropdownBar = (Spinner) findViewById(R.id.task_status_dropdown);
+        taskPrioriyDropdownBar = (Spinner) findViewById(R.id.task_priority_dropdown);
         saveTask = findViewById(R.id.save_task_bar);
         closeTask = findViewById(R.id.close_task_bar);
         editTask = findViewById(R.id.edit_task_bar);
+        taskDate = findViewById(R.id.task_date_view);
+        taskTime = findViewById(R.id.task_time_view);
 
         spinner();
 
@@ -87,6 +101,23 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
             }
         });
 
+        taskDateTimePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                year = calendar.get(Calendar.YEAR);
+                month = calendar.get(Calendar.MONTH);
+                day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog =new DatePickerDialog(TaskDetailActivity.this, TaskDetailActivity.this,
+                                                                        year, month, day);
+                datePickerDialog.show();
+
+                taskDate.setText(day+"-"+month+"-"+year);
+                taskTime.setText(hour+":"+minute);
+            }
+        });
+
     }
 
     public void showExistingTask() {
@@ -118,12 +149,22 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
     //drop down list to ask user where to add the task(todo , inprogress, completed)
     public void spinner() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(TaskDetailActivity.this,
-                android.R.layout.simple_spinner_item, paths);
+        ArrayAdapter<Card.CardStatus> adapterCardStatus = new ArrayAdapter<Card.CardStatus>(TaskDetailActivity.this,
+                android.R.layout.simple_spinner_item, Card.CardStatus.values());
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        taskStatusDropdownBar.setAdapter(adapter);
+        adapterCardStatus.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        taskStatusDropdownBar.setAdapter(adapterCardStatus);
         taskStatusDropdownBar.setOnItemSelectedListener(this);
+
+        ArrayAdapter<Card.CardPriority> adapterCardPriority = new ArrayAdapter<Card.CardPriority>(TaskDetailActivity.this,
+                android.R.layout.simple_spinner_item, Card.CardPriority.values());
+
+        adapterCardPriority.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        taskPrioriyDropdownBar.setAdapter(adapterCardPriority);
+        taskPrioriyDropdownBar.setOnItemSelectedListener(this);
+
+
+
     }
 
     @Override
@@ -149,6 +190,29 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        this.year = year;
+        this.month = month;
+        this.day = dayOfMonth;
+
+        Calendar calendar =Calendar.getInstance();
+
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(TaskDetailActivity.this, TaskDetailActivity.this,
+                                                hour, minute, DateFormat.is24HourFormat(this));
+        timePickerDialog.show();
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+        this.hour = hourOfDay;
+        this.minute =minute;
+
+    }
 }
 
 
