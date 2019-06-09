@@ -1,11 +1,13 @@
 package com.citta.lucidkanban.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -141,12 +143,44 @@ public class TasksFragment extends Fragment {
                     startActivity(intent);
                 }
             });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    showDeleteWarningDialog(getAdapterPosition());
+                    return false;
+                }
+            });
         }
 
         public void hydrate(Task task) {
             taskTitleLabel.setText(task.taskTitle);
             taskDescLabel.setText(task.taskDescription);
 //            taskDateLabel.setText(task.taskDate);
+        }
+    }
+
+    private void showDeleteWarningDialog(final int adapterPosition) {
+        if ( isVisible() ) {
+
+            AlertDialog.Builder build= new AlertDialog.Builder(taskFragmentContext);
+            build.setTitle("Are you sure you want to remove this task?");
+            build.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    TaskManager.getInstance().removeTaskItem(itemList.get(adapterPosition));
+                    updateItemsListAndNotifyAdapter(true);
+                }
+            });
+            build.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog dialog= build.create();
+            dialog.show();
+
         }
     }
 

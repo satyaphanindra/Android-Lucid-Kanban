@@ -23,8 +23,6 @@ import com.citta.lucidkanban.R;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private boolean isClickedNewTask = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +36,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                isClickedNewTask = true;
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        //.setAction("Action", null).show();
                 Intent intent = new Intent(MainActivity.this, TaskDetailActivity.class);
-                intent.putExtra("isUserClickedNewTask", isClickedNewTask);
                 startActivity(intent);
 
             }
