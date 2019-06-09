@@ -35,6 +35,32 @@ public class TaskManager {
         tasksList.add(item);
     }
 
+    public void replaceExistingTaskItem(String id, Task newTask) {
+        int i = 0;
+        for(Task task : tasksList) {
+            if(task.taskId.equals(id)) {
+                //found it!
+                tasksList.set(i, newTask);
+                break;
+            }
+            i++;
+        }
+    }
+
+    public Task getTaskWithId(String id) {
+        Task task = null;
+        int i = 0;
+        for(Task taskItem : tasksList) {
+            if(taskItem.taskId.equals(id)) {
+                //found it!
+                task = tasksList.get(i);
+                break;
+            }
+            i++;
+        }
+        return task;
+    }
+
     public void removeTaskItem(Task item) {
         tasksList.remove(item);
     }

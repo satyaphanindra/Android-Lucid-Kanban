@@ -6,7 +6,7 @@ import com.citta.lucidkanban.model.Card.CardPriority;
 import java.io.Serializable;
 
 public class Task implements Serializable {
-    public int taskId;
+    public String taskId;
     public String taskTitle;
     public String taskDescription;
     public String taskDate;
@@ -14,7 +14,7 @@ public class Task implements Serializable {
     public CardStatus cardStatus = CardStatus.TODO;
 //    public ImageView taskImage;
 
-    public Task(int taskId, String taskTitle, String taskDescription, String taskDate)
+    public Task(String taskId, String taskTitle, String taskDescription, String taskDate)
     {
         this.taskId = taskId;
         this.taskTitle = taskTitle;
@@ -23,7 +23,7 @@ public class Task implements Serializable {
 //        this.taskImage = taskImage;
     }
 
-    public Task(int taskId, String taskTitle, String taskDescription, String taskDate,
+    public Task(String taskId, String taskTitle, String taskDescription, String taskDate,
                 CardPriority cardPriority, CardStatus cardStatus)
     {
         this.taskId = taskId;

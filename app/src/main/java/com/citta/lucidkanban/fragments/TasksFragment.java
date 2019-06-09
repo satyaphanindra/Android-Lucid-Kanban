@@ -31,6 +31,9 @@ public class TasksFragment extends Fragment {
     private Context taskFragmentContext;
     private List<Task> itemList;
 
+    public static final String EXISTING_ID = "existingTaskId";
+    public static final String IS_EXISTING_TASK = "isUserClickedExistingTask";
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -133,8 +136,8 @@ public class TasksFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(taskFragmentContext, TaskDetailActivity.class);
-                    intent.putExtra("itemNumber", getAdapterPosition());
-                    intent.putExtra("isUserClickedExistingTask", true);
+                    intent.putExtra(EXISTING_ID, itemList.get(getAdapterPosition()).taskId);
+                    intent.putExtra(IS_EXISTING_TASK, true);
                     startActivity(intent);
                 }
             });

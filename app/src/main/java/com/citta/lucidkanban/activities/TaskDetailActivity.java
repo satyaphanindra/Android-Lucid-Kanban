@@ -25,16 +25,21 @@ import com.citta.lucidkanban.model.Task;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
+
+import static com.citta.lucidkanban.fragments.TasksFragment.EXISTING_ID;
 
 public class TaskDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
-                                        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-    private Spinner taskStatusDropdownBar ,taskPrioriyDropdownBar;
+        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+    private Spinner taskStatusDropdownBar, taskPrioriyDropdownBar;
     /*private static final String[] paths = {"NONE", "TODO", "IN PROGRESS", "COMPLETED"};
     private static final String[] priority = {"LOW", "MEDIUM","HIGH"};*/
     private ImageView taskImage, closeTask, saveTask, taskDateTimePicker, editTask;
     private TextView taskTitle, taskDescription, taskDate, taskTime;
-    private Task itemTask;
+    private Task itemTask = null;
     private int year, month, day, hour, minute;
+    private String existingTaskId = null;
+    //private Boolean isUserClickedExistingTask = false;
 //    private int yearFinal, monthFinal, dayFinal, hoursFinal, minuteFinal;
 
     @Override
@@ -42,7 +47,12 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_task);
-        int position = getIntent().getExtras().getInt("itemNumber");
+
+        if (getIntent().getExtras() != null) {
+            existingTaskId = getIntent().getExtras().getString(EXISTING_ID, null);
+            //isUserClickedExistingTask = getIntent().getExtras().getBoolean("isUserClickedExistingTask", false);
+        }
+
         taskImage = findViewById(R.id.task_image_bar);
         taskTitle = findViewById(R.id.task_title_view);
         taskDescription = findViewById(R.id.task_description_view);
@@ -55,41 +65,49 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         taskDate = findViewById(R.id.task_date_view);
         taskTime = findViewById(R.id.task_time_view);
 
-        spinner();
+        initSpinner();
 
-        final Boolean isUserClickedExistingTask = getIntent().getExtras().getBoolean("isUserClickedExistingTask");
-
-        if (isUserClickedExistingTask) {
+        if ( existingTaskId!=null ) {
             showExistingTask();
+            enableViews(false);
+        }
 
-            editTask.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    taskTitle.setFocusable(isUserClickedExistingTask);
-                    taskTitle.setEnabled(isUserClickedExistingTask);
-                    taskTitle.setClickable(isUserClickedExistingTask);
-                    taskTitle.setFocusableInTouchMode(isUserClickedExistingTask);
-                    taskTitle.requestFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        editTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enableViews(true);
+                taskTitle.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
                     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                 }
-            });
-        } else {
-        }
+            }
+        });
+
 
         saveTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // TODO date and others
                 String title = taskTitle.getText().toString();
                 String description = taskDescription.getText().toString();
 
-                itemTask = new Task(1, title, description, "date");
+                if ( existingTaskId!=null ) {
 
-                TaskManager.getInstance().addTaskItem(itemTask);
+                    itemTask.taskTitle = title;
+                    itemTask.taskDescription = description;
 
-                Toast toast = Toast.makeText(TaskDetailActivity.this, "Saved\n" + "Task Id: " + itemTask.taskId, Toast.LENGTH_SHORT);
-                toast.show();
+                    TaskManager.getInstance().replaceExistingTaskItem(itemTask.taskId, itemTask);
+
+                } else {
+
+                    String id = UUID.randomUUID().toString();
+                    itemTask = new Task(id, title, description, "date");
+                    TaskManager.getInstance().addTaskItem(itemTask);
+                }
+
+                Toast.makeText(TaskDetailActivity.this, "Saved\n" + "Task Id: " + itemTask.taskId, Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -109,46 +127,57 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                 month = calendar.get(Calendar.MONTH);
                 day = calendar.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog datePickerDialog =new DatePickerDialog(TaskDetailActivity.this, TaskDetailActivity.this,
-                                                                        year, month, day);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(TaskDetailActivity.this, TaskDetailActivity.this,
+                        year, month, day);
                 datePickerDialog.show();
 
-                taskDate.setText(day+"-"+month+"-"+year);
-                taskTime.setText(hour+":"+minute);
+                taskDate.setText(day + "-" + month + "-" + year);
+                taskTime.setText(hour + ":" + minute);
             }
         });
 
     }
 
-    public void showExistingTask() {
+    private void enableViews(boolean enable) {
 
-        List<Task> itemList = TaskManager.getInstance().tasksList;
+        if (enable) {
+            taskTitle.setFocusable(true);
+            taskTitle.setClickable(true);
+            taskTitle.setFocusableInTouchMode(true);
+            taskTitle.requestFocus();
 
-        int itemNumber = getIntent().getExtras().getInt("itemNumber");
+            editTask.setVisibility(View.GONE);
+            saveTask.setVisibility(View.VISIBLE);
 
-        taskTitle.setText(itemList.get(itemNumber).taskTitle);
-        taskDescription.setText(itemList.get(itemNumber).taskDescription);
+        } else {
 
-        taskTitle.setFocusable(false);
-        //taskTitle.setEnabled(false);
-        taskTitle.setClickable(false);
-        taskTitle.setFocusableInTouchMode(false);
-        taskTitle.requestFocus();
+            taskTitle.setFocusable(false);
+            taskTitle.setClickable(false);
+            taskTitle.setFocusableInTouchMode(false);
+            taskTitle.requestFocus();
 
-        editTask.setVisibility(View.VISIBLE);
-        saveTask.setVisibility(View.GONE);
-
+            editTask.setVisibility(View.VISIBLE);
+            saveTask.setVisibility(View.GONE);
+        }
     }
 
-    public void saveTask() {
-        TaskManager.getInstance().addTaskItem(itemTask);
-        Toast toast = Toast.makeText(TaskDetailActivity.this, "Task Saved", Toast.LENGTH_SHORT);
-        toast.show();
-        finish();
+    public void showExistingTask() {
+
+        if (existingTaskId == null) return;
+
+        itemTask = TaskManager.getInstance().getTaskWithId(existingTaskId);
+
+        if (itemTask == null) return;
+
+        // TODO date etc
+        taskTitle.setText(itemTask.taskTitle);
+
+        taskDescription.setText(itemTask.taskDescription);
+
     }
 
     //drop down list to ask user where to add the task(todo , inprogress, completed)
-    public void spinner() {
+    public void initSpinner() {
         ArrayAdapter<Card.CardStatus> adapterCardStatus = new ArrayAdapter<Card.CardStatus>(TaskDetailActivity.this,
                 android.R.layout.simple_spinner_item, Card.CardStatus.values());
 
@@ -162,9 +191,6 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         adapterCardPriority.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         taskPrioriyDropdownBar.setAdapter(adapterCardPriority);
         taskPrioriyDropdownBar.setOnItemSelectedListener(this);
-
-
-
     }
 
     @Override
@@ -196,13 +222,13 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         this.month = month;
         this.day = dayOfMonth;
 
-        Calendar calendar =Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
 
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(TaskDetailActivity.this, TaskDetailActivity.this,
-                                                hour, minute, DateFormat.is24HourFormat(this));
+                hour, minute, DateFormat.is24HourFormat(this));
         timePickerDialog.show();
     }
 
@@ -210,7 +236,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
         this.hour = hourOfDay;
-        this.minute =minute;
+        this.minute = minute;
 
     }
 }
