@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_tasks);
-        setFragments(R.id.nav_tasks);
+        setNavItem(R.id.nav_tasks);
 
         //navigationView.setCheckedItem(R.id.nav_tasks);
     }
@@ -104,32 +104,58 @@ public class MainActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        setFragments(id);
-
-        /********if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        }
-        //else if (id == R.id.nav_slideshow) {
-        //} else if (id == R.id.nav_manage) {
-        // }
-        else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }*********/
+        setNavItem(id);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void setFragments(int id) {
+    private void setNavItem(int id) {
         switch (id){
             case R.id.nav_tasks:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new TasksFragment()).commit();
+                    break;
+
+                case R.id.nav_share:
+                    openSharingMenuWindow();
+                    break;
+
+                case R.id.nav_feedback:
+                    openFeedbackWindow();
+                    break;
         }
     }
+
+    private void openFeedbackWindow() {
+
+    }
+
+    private void openSharingMenuWindow() {
+        Intent intentInvite = new Intent(Intent.ACTION_SEND);
+        intentInvite.setType("text/plain");
+        String link = "Enjoy free Note saving and tracking app\n\nhttps://play.google.com/store/apps/details?id=com.citta.lucidkanban";
+        String subject = "Lucid Kanban App";
+        intentInvite.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intentInvite.putExtra(Intent.EXTRA_TEXT, link);
+        startActivity(Intent.createChooser(intentInvite, "Share using"));
+    }
 }
+
+
+
+
+/********if (id == R.id.nav_camera) {
+ // Handle the camera action
+ } else if (id == R.id.nav_gallery) {
+
+ }
+ //else if (id == R.id.nav_slideshow) {
+ //} else if (id == R.id.nav_manage) {
+ // }
+ else if (id == R.id.nav_share) {
+
+ } else if (id == R.id.nav_send) {
+
+ }*********/
