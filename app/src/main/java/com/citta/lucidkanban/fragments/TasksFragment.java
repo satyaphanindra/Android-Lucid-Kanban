@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.citta.lucidkanban.R;
+import com.citta.lucidkanban.activities.MainActivity;
 import com.citta.lucidkanban.activities.TaskDetailActivity;
 import com.citta.lucidkanban.data.Storage;
 import com.citta.lucidkanban.managers.TaskManager;
@@ -27,7 +28,7 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 
-public class TasksFragment extends Fragment {
+public class TasksFragment extends Fragment implements MainActivity.OnDeleteAllClickListener {
 
     private RecyclerView tasksRecyclerView;
     private Context taskFragmentContext;
@@ -40,6 +41,8 @@ public class TasksFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         taskFragmentContext = context;
+        ((MainActivity)getActivity()).fragmentInterfaceListener = this;
+
     }
 
     @Nullable
@@ -82,6 +85,10 @@ public class TasksFragment extends Fragment {
         tasksRecyclerView.setAdapter(sectionAdapter);
     }
 
+    @Override
+    public void onDeleteClicked() {
+        updateItemsListAndNotifyAdapter(true);
+    }
 
 
     //

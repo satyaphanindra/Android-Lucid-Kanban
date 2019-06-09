@@ -6,6 +6,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="action_delete">Delete all</string>
     <string name="tasks_title">Welcome to Lucid Tasks!</string>
     <string name="main_welcome_title">Welcome to Lucid Kanban!</string>
     <string name="main_subtitle">Check your Lucid Tasks</string>

@@ -1,10 +1,10 @@
 package com.citta.lucidkanban.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.citta.lucidkanban.fragments.TasksFragment;
 import com.citta.lucidkanban.R;
+import com.citta.lucidkanban.managers.TaskManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -88,7 +89,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_delete_all) {
+            showDeleteAllWarningDialog();
             return true;
         }
 
@@ -158,6 +160,34 @@ public class MainActivity extends AppCompatActivity
         intentInvite.putExtra(Intent.EXTRA_SUBJECT, subject);
         intentInvite.putExtra(Intent.EXTRA_TEXT, link);
         startActivity(Intent.createChooser(intentInvite, "Share using"));
+    }
+
+    private void showDeleteAllWarningDialog() {
+
+            AlertDialog.Builder build= new AlertDialog.Builder(this);
+            build.setTitle("Are you sure you want to delete all your tasks?");
+            build.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    TaskManager.getInstance().removeAllTasks();
+                    fragmentInterfaceListener.onDeleteClicked();
+                }
+            });
+            build.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog dialog= build.create();
+            dialog.show();
+
+    }
+
+    public OnDeleteAllClickListener fragmentInterfaceListener;
+
+    public interface OnDeleteAllClickListener{
+        void onDeleteClicked();
     }
 }
 
