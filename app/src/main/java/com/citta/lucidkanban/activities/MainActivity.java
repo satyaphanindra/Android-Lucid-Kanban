@@ -1,9 +1,11 @@
 package com.citta.lucidkanban.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.citta.lucidkanban.fragments.TasksFragment;
 import com.citta.lucidkanban.R;
@@ -128,7 +131,26 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void openFeedbackWindow() {
+    protected void openFeedbackWindow() {
+
+        String to = "cittagroup@gmail.com";
+        String subject = "Feedback for Lucid Kanban App";
+        String message = "Thank you for taking interest in providing feeedback!\n\n Please provide your feedback here.\n";
+
+        Intent email = new Intent(Intent.ACTION_SEND);
+        email.putExtra(Intent.EXTRA_EMAIL, new String[] { to });
+        email.putExtra(Intent.EXTRA_SUBJECT, subject);
+        email.putExtra(Intent.EXTRA_TEXT, message);
+
+        // need this to prompts email client only
+        email.setType("message/rfc822");
+        try {
+            startActivity(Intent.createChooser(email, "Choose an Email client :"));
+            Log.i("Finished sending email", "");
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(MainActivity.this,
+                    "There is no email client installed.", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
