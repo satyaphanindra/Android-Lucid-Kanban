@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.citta.lucidkanban.fragments.TasksFragment;
 import com.citta.lucidkanban.R;
 import com.citta.lucidkanban.managers.TaskManager;
+import com.citta.lucidkanban.model.Card;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
 
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        //.setAction("Action", null).show();
+                //.setAction("Action", null).show();
                 Intent intent = new Intent(MainActivity.this, TaskDetailActivity.class);
                 startActivity(intent);
 
@@ -58,10 +59,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.nav_tasks);
         setNavItem(R.id.nav_tasks);
 
-        //navigationView.setCheckedItem(R.id.nav_tasks);
     }
-
-
 
 
     @Override
@@ -113,19 +111,32 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setNavItem(int id) {
-        switch (id){
+
+        switch (id) {
             case R.id.nav_tasks:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new TasksFragment()).commit();
-                    break;
+                break;
 
-                case R.id.nav_share:
-                    openSharingMenuWindow();
-                    break;
+            case R.id.low_priority_task:
+                fragmentInterfaceListener.onPriorityButtonClicked(Card.CardPriority.LOW);
+                break;
 
-                case R.id.nav_feedback:
-                    openFeedbackWindow();
-                    break;
+            case R.id.med_priority_task:
+                fragmentInterfaceListener.onPriorityButtonClicked(Card.CardPriority.MEDIUM);
+                break;
+
+            case R.id.high_priority_task:
+                fragmentInterfaceListener.onPriorityButtonClicked(Card.CardPriority.HIGH);
+                break;
+
+            case R.id.nav_share:
+                openSharingMenuWindow();
+                break;
+
+            case R.id.nav_feedback:
+                openFeedbackWindow();
+                break;
         }
     }
 
@@ -136,7 +147,7 @@ public class MainActivity extends AppCompatActivity
         String message = "Thank you for taking interest in providing feeedback!\n\n Please provide your feedback here.\n";
 
         Intent email = new Intent(Intent.ACTION_SEND);
-        email.putExtra(Intent.EXTRA_EMAIL, new String[] { to });
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
         email.putExtra(Intent.EXTRA_SUBJECT, subject);
         email.putExtra(Intent.EXTRA_TEXT, message);
 
@@ -164,34 +175,33 @@ public class MainActivity extends AppCompatActivity
 
     private void showDeleteAllWarningDialog() {
 
-            AlertDialog.Builder build= new AlertDialog.Builder(this);
-            build.setTitle("Are you sure you want to delete all your tasks?");
-            build.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    TaskManager.getInstance().removeAllTasks();
-                    fragmentInterfaceListener.onDeleteClicked();
-                }
-            });
-            build.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            AlertDialog dialog= build.create();
-            dialog.show();
+        AlertDialog.Builder build = new AlertDialog.Builder(this);
+        build.setTitle("Are you sure you want to delete all your tasks?");
+        build.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                TaskManager.getInstance().removeAllTasks();
+                fragmentInterfaceListener.onDeleteClicked();
+            }
+        });
+        build.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog dialog = build.create();
+        dialog.show();
 
     }
 
-    public OnDeleteAllClickListener fragmentInterfaceListener;
+    public OnMainViewsClickListener fragmentInterfaceListener;
 
-    public interface OnDeleteAllClickListener{
+    public interface OnMainViewsClickListener {
         void onDeleteClicked();
+        void onPriorityButtonClicked(Card.CardPriority cardPriority);
     }
 }
-
-
 
 
 /********if (id == R.id.nav_camera) {

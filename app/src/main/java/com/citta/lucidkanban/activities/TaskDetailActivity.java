@@ -92,18 +92,22 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                 // TODO date and others
                 String title = taskTitle.getText().toString();
                 String description = taskDescription.getText().toString();
+                Card.CardPriority priority = (Card.CardPriority) taskPrioriyDropdownBar.getSelectedItem();
+                Card.CardStatus status = (Card.CardStatus) taskStatusDropdownBar.getSelectedItem();
 
                 if ( existingTaskId!=null ) {
 
                     itemTask.taskTitle = title;
                     itemTask.taskDescription = description;
+                    itemTask.cardPriority = priority;
+                    itemTask.cardStatus = status;
 
                     TaskManager.getInstance().replaceExistingTaskItem(itemTask.taskId, itemTask);
 
                 } else {
 
                     String id = UUID.randomUUID().toString();
-                    itemTask = new Task(id, title, description, "date");
+                    itemTask = new Task(id, title, description, "date", priority, status);
                     TaskManager.getInstance().addTaskItem(itemTask);
                 }
 
@@ -171,9 +175,8 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
         // TODO date etc
         taskTitle.setText(itemTask.taskTitle);
-
         taskDescription.setText(itemTask.taskDescription);
-
+        taskPrioriyDropdownBar.setSelection(TaskManager.getInstance().getPriorityNumber(itemTask.cardPriority));
     }
 
     //drop down list to ask user where to add the task(todo , inprogress, completed)

@@ -18,8 +18,8 @@ import android.widget.TextView;
 import com.citta.lucidkanban.R;
 import com.citta.lucidkanban.activities.MainActivity;
 import com.citta.lucidkanban.activities.TaskDetailActivity;
-import com.citta.lucidkanban.data.Storage;
 import com.citta.lucidkanban.managers.TaskManager;
+import com.citta.lucidkanban.model.Card;
 import com.citta.lucidkanban.model.Task;
 
 import java.util.List;
@@ -28,11 +28,12 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 
-public class TasksFragment extends Fragment implements MainActivity.OnDeleteAllClickListener {
+public class TasksFragment extends Fragment implements MainActivity.OnMainViewsClickListener {
 
     private RecyclerView tasksRecyclerView;
     private Context taskFragmentContext;
     private List<Task> itemList;
+    private Card.CardPriority prioritySelected = null;
 
     public static final String EXISTING_ID = "existingTaskId";
     public static final String IS_EXISTING_TASK = "isUserClickedExistingTask";
@@ -68,7 +69,10 @@ public class TasksFragment extends Fragment implements MainActivity.OnDeleteAllC
     }
 
     private void updateItemsListAndNotifyAdapter(Boolean notify) {
-        itemList = TaskManager.getInstance().tasksList;
+        if(prioritySelected != null)
+            itemList = TaskManager.getInstance().getItemsOfPriority(prioritySelected);
+        else
+            itemList = TaskManager.getInstance().tasksList;
 
         if(notify)
             tasksRecyclerView.getAdapter().notifyDataSetChanged();
@@ -90,6 +94,12 @@ public class TasksFragment extends Fragment implements MainActivity.OnDeleteAllC
         updateItemsListAndNotifyAdapter(true);
     }
 
+    @Override
+    public void onPriorityButtonClicked(Card.CardPriority cardPriority) {
+        prioritySelected = cardPriority;
+        updateItemsListAndNotifyAdapter(true);
+    }
+
 
     //
     // region inner structure
@@ -97,14 +107,14 @@ public class TasksFragment extends Fragment implements MainActivity.OnDeleteAllC
 
     class MySection extends StatelessSection {
 
-        private List<Task> itemList;
+        //private List<Task> itemList;
 
         public MySection(List<Task> itemList) {
             // call constructor with layout resources for this Section header and items
             super(SectionParameters.builder()
                     .itemResourceId(R.layout.tasks_item)
                     .build());
-            this.itemList = itemList;
+            //this.itemList = itemList;
         }
 
         @Override

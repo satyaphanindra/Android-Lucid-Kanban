@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.citta.lucidkanban.LucidApplication;
 import com.citta.lucidkanban.data.Storage;
+import com.citta.lucidkanban.model.Card;
 import com.citta.lucidkanban.model.Task;
 
 import java.util.ArrayList;
@@ -49,16 +50,29 @@ public class TaskManager {
 
     public Task getTaskWithId(String id) {
         Task task = null;
-        int i = 0;
+        //int i = 0;
         for(Task taskItem : tasksList) {
             if(taskItem.taskId.equals(id)) {
                 //found it!
-                task = tasksList.get(i);
+                task = taskItem;//tasksList.get(i);
                 break;
+            }
+            //i++;
+        }
+        return task;
+    }
+
+    public List<Task> getItemsOfPriority(Card.CardPriority cardPriority) {
+        List<Task> priorityList = new ArrayList<>();
+        int i = 0;
+        for(Task taskItem : tasksList) {
+            if(taskItem.cardPriority.equals(cardPriority)) {
+                //found it!
+                priorityList.add(taskItem);
             }
             i++;
         }
-        return task;
+        return priorityList;
     }
 
     public void removeTaskItem(Task item) {
@@ -86,5 +100,16 @@ public class TaskManager {
         Storage storage = new Storage(LucidApplication.getInstance());
         List<Task> itemList = (List<Task>) storage.retrieve("File", Storage.Directory.Documents);
         tasksList = itemList;
+    }
+
+    public int getPriorityNumber(Card.CardPriority cardPriority) {
+        int itemSelected = 0;
+        if(cardPriority.equals(Card.CardPriority.LOW))
+            itemSelected = 0;
+        else if(cardPriority.equals(Card.CardPriority.MEDIUM))
+            itemSelected = 1;
+        else if(cardPriority.equals(Card.CardPriority.HIGH))
+            itemSelected = 2;
+        return itemSelected;
     }
 }

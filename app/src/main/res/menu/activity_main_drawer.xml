@@ -7,19 +7,20 @@
         <item
             android:id="@+id/nav_tasks"
             android:icon="@drawable/ic_format_list_numbered_white"
-            android:title="Tasks" />
-        <!--<item
-            android:id="@+id/nav_kanban_board"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Kanban Board" />-->
-        <!--<item`
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="TASKS" />
+
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"56
-            android:title="Tools" />-->
+            android:id="@+id/low_priority_task"
+            android:icon="@drawable/dot"
+            android:title="Low Priority" />
+        <item
+            android:id="@+id/med_priority_task"
+            android:icon="@drawable/dot"
+            android:title="Medium Priority" />
+        <item
+            android:id="@+id/high_priority_task"
+            android:icon="@drawable/dot"
+            android:title="High Priority" />
     </group>
 
     <item android:title="Communicate">
