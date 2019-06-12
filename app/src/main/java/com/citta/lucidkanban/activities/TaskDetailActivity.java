@@ -1,17 +1,26 @@
 package com.citta.lucidkanban.activities;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -27,14 +36,19 @@ import java.util.Calendar;
 import java.util.List;
 
 public class TaskDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
-                                        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-    private Spinner taskStatusDropdownBar ,taskPrioriyDropdownBar;
+        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+    private Spinner taskStatusDropdownBar, taskPrioriyDropdownBar;
     /*private static final String[] paths = {"NONE", "TODO", "IN PROGRESS", "COMPLETED"};
     private static final String[] priority = {"LOW", "MEDIUM","HIGH"};*/
-    private ImageView taskImage, closeTask, saveTask, taskDateTimePicker, editTask;
+    private ImageView taskImage, closeTask, saveTask, taskDateTimePicker, editTask, displayImage;
     private TextView taskTitle, taskDescription, taskDate, taskTime;
     private Task itemTask;
     private int year, month, day, hour, minute;
+    private String timeSelected;
+    private StringBuilder dateSelected;
+    private int REQUEST_CAMERA=1, SELECT_FILE=0;
+
+
 //    private int yearFinal, monthFinal, dayFinal, hoursFinal, minuteFinal;
 
     @Override
@@ -42,7 +56,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_task);
-        int position = getIntent().getExtras().getInt("itemNumber");
+//        int position = getIntent().getExtras().getInt("itemNumber");
         taskImage = findViewById(R.id.task_image_bar);
         taskTitle = findViewById(R.id.task_title_view);
         taskDescription = findViewById(R.id.task_description_view);
@@ -54,6 +68,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         editTask = findViewById(R.id.edit_task_bar);
         taskDate = findViewById(R.id.task_date_view);
         taskTime = findViewById(R.id.task_time_view);
+        displayImage =(ImageView) findViewById(R.id.selected_image);
 
         spinner();
 
@@ -65,13 +80,16 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
             editTask.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    taskTitle.setFocusable(isUserClickedExistingTask);
-                    taskTitle.setEnabled(isUserClickedExistingTask);
-                    taskTitle.setClickable(isUserClickedExistingTask);
-                    taskTitle.setFocusableInTouchMode(isUserClickedExistingTask);
-                    taskTitle.requestFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+
+                    fieldEditMode(taskTitle, true);
+                    fieldEditMode(taskDescription, true);
+                    fieldEditMode(taskStatusDropdownBar, true);
+                    fieldEditMode(taskPrioriyDropdownBar, true);
+                    fieldEditMode(taskImage, true);
+                    fieldEditMode(taskDateTimePicker, true);
+
+                    editTask.setVisibility(View.GONE);
+                    saveTask.setVisibility(View.VISIBLE);
                 }
             });
         } else {
@@ -83,38 +101,97 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
                 String title = taskTitle.getText().toString();
                 String description = taskDescription.getText().toString();
+                if(!((title.isEmpty()) || (description.isEmpty())))
+                {
+                    itemTask = new Task(1, title, description, dateSelected, timeSelected);
 
-                itemTask = new Task(1, title, description, "date");
+                    TaskManager.getInstance().addTaskItem(itemTask);
+                    Toast toast = Toast.makeText(TaskDetailActivity.this, "Saved\n" + "Task Id: " + itemTask.taskId, Toast.LENGTH_SHORT);
+                    toast.show();
+                    finish();
+                }
 
-                TaskManager.getInstance().addTaskItem(itemTask);
+                else {
+                    Toast toast = Toast.makeText(TaskDetailActivity.this, "Please enter all fields", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
 
-                Toast toast = Toast.makeText(TaskDetailActivity.this, "Saved\n" + "Task Id: " + itemTask.taskId, Toast.LENGTH_SHORT);
-                toast.show();
-                finish();
             }
         });
 
-        closeTask.setOnClickListener(new View.OnClickListener() {
+        displayImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                SelectImage();
+
             }
         });
 
         taskDateTimePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                year = calendar.get(Calendar.YEAR);
-                month = calendar.get(Calendar.MONTH);
-                day = calendar.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog datePickerDialog =new DatePickerDialog(TaskDetailActivity.this, TaskDetailActivity.this,
-                                                                        year, month, day);
-                datePickerDialog.show();
+                if (year == 0 || month == 0 || day == 0) {
+                    Calendar calendar = Calendar.getInstance();
+                    year = calendar.get(Calendar.YEAR);
+                    month = calendar.get(Calendar.MONTH);
+                    day = calendar.get(Calendar.DAY_OF_MONTH);
+                }
 
-                taskDate.setText(day+"-"+month+"-"+year);
-                taskTime.setText(hour+":"+minute);
+                DatePickerDialog mDatePicker = new DatePickerDialog(TaskDetailActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datepicker, int selectedYear, int selectedMonth, int selectedDay) {
+                        year = selectedYear;
+                        month = selectedMonth;
+                        day = selectedDay;
+                        dateSelected = new StringBuilder().append(year).append("-").append(month + 1).append("-").append(day);
+                        taskDate.setText(dateSelected);
+//                        dateSelected = d.toString();
+
+                        Calendar calendar = Calendar.getInstance();
+                        hour = calendar.get(Calendar.HOUR_OF_DAY);
+                        minute = calendar.get(Calendar.MINUTE);
+
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(TaskDetailActivity.this, TaskDetailActivity.this,
+                                hour, minute, DateFormat.is24HourFormat(TaskDetailActivity.this));
+                        timePickerDialog.show();
+                    }
+                }, year, month, day);
+                mDatePicker.getDatePicker();
+                mDatePicker.show();
+            }
+        });
+
+        closeTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //todo
+
+                String title = taskTitle.getText().toString();
+                String description = taskDescription.getText().toString();
+                Boolean check = getIntent().getExtras().getBoolean("isUserClickedExistingTask");
+                if((title.isEmpty()) & (description.isEmpty())){
+                    finish();
+                    }
+                else if(check){finish();}
+                else {
+                    AlertDialog.Builder build= new AlertDialog.Builder(TaskDetailActivity.this);
+                    build.setTitle("Discard data entered?");
+                    build.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+                    build.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    AlertDialog dialog= build.create();
+                    dialog.show();
+                }
             }
         });
 
@@ -128,17 +205,124 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
         taskTitle.setText(itemList.get(itemNumber).taskTitle);
         taskDescription.setText(itemList.get(itemNumber).taskDescription);
+        taskDate.setText(itemList.get(itemNumber).taskDate);
+        taskTime.setText(itemList.get(itemNumber).taskTime);
 
-        taskTitle.setFocusable(false);
-        //taskTitle.setEnabled(false);
-        taskTitle.setClickable(false);
-        taskTitle.setFocusableInTouchMode(false);
-        taskTitle.requestFocus();
+        fieldEditMode(taskTitle, false);
+        fieldEditMode(taskDescription, false);
+        fieldEditMode(taskDate, false);
+        fieldEditMode(taskTime, false);
+        fieldEditMode(taskStatusDropdownBar, false);
+        fieldEditMode(taskPrioriyDropdownBar, false);
+        fieldEditMode(taskImage, false);
+        fieldEditMode(taskDateTimePicker, false);
 
         editTask.setVisibility(View.VISIBLE);
         saveTask.setVisibility(View.GONE);
 
     }
+
+    public void fieldEditMode(View id, Boolean isNonEditMode) {
+        if (id == taskTitle || id == taskDescription) {
+            id.setFocusable(isNonEditMode);
+
+            id.setEnabled(isNonEditMode);
+            id.setClickable(isNonEditMode);
+            id.setFocusableInTouchMode(isNonEditMode);
+            id.requestFocus();
+
+            if (!isNonEditMode) {
+                id.setBackgroundResource(R.color.verylightGray);
+            } else {
+                id.setBackgroundResource(R.color.white);
+            }
+        } else if (id == taskStatusDropdownBar || id == taskPrioriyDropdownBar) {
+            id.setEnabled(isNonEditMode);
+
+            if (!isNonEditMode) {
+                id.setBackgroundResource(R.color.verylightGray);
+            } else {
+                id.setBackgroundResource(R.color.white);
+            }
+        } else if (id == taskImage || id == taskDateTimePicker) {
+            id.setEnabled(isNonEditMode);
+        }
+    }
+
+    private void SelectImage(){
+
+        final CharSequence[] items={"Camera","Gallery", "Cancel"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(TaskDetailActivity.this);
+        builder.setTitle("Add Image");
+
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (items[i].equals("Camera")) {
+
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, REQUEST_CAMERA);
+
+                } else if (items[i].equals("Gallery")) {
+
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+//                    startActivityForResult(intent.createChooser(intent, "Select File"), SELECT_FILE);
+                    startActivityForResult(intent, SELECT_FILE);
+
+                } else if (items[i].equals("Cancel")) {
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        builder.show();
+
+    }
+
+    @Override
+    public  void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode,data);
+
+        if(resultCode== Activity.RESULT_OK){
+
+            if(requestCode==REQUEST_CAMERA){
+
+                Bundle bundle = data.getExtras();
+                final Bitmap bmp = (Bitmap) bundle.get("data");
+                displayImage.setImageBitmap(bmp);
+
+            }else if(requestCode==SELECT_FILE){
+
+                Uri selectedImageUri = data.getData();
+                displayImage.setImageURI(selectedImageUri);
+            }
+
+        }
+
+    }
+
+/*
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+        switch(requestCode) {
+            case 0:
+                if(resultCode == REQUEST_CAMERA){
+                    Uri selectedImage = imageReturnedIntent.getData();
+                    displayImage.setImageURI(selectedImage);
+                }
+
+                break;
+            case 1:
+                if(resultCode == SELECT_FILE){
+                    Uri selectedImage = imageReturnedIntent.getData();
+                    displayImage.setImageURI(selectedImage);
+                }
+                break;
+        }
+    }
+*/
 
     public void saveTask() {
         TaskManager.getInstance().addTaskItem(itemTask);
@@ -164,7 +348,6 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         taskPrioriyDropdownBar.setOnItemSelectedListener(this);
 
 
-
     }
 
     @Override
@@ -178,10 +361,10 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                 // Whatever you want to happen when the second item gets selected
                 break;
             case 2:
-                // Whatever you want to happen when the thrid item gets selected
+                // Whatever you want to happen when the third item gets selected
                 break;
             case 3:
-                // Whatever you want to happen when the thrid item gets selected
+                // Whatever you want to happen when the third item gets selected
                 break;
         }
     }
@@ -192,55 +375,14 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        this.year = year;
-        this.month = month;
-        this.day = dayOfMonth;
-
-        Calendar calendar =Calendar.getInstance();
-
-        hour = calendar.get(Calendar.HOUR_OF_DAY);
-        minute = calendar.get(Calendar.MINUTE);
-
-        TimePickerDialog timePickerDialog = new TimePickerDialog(TaskDetailActivity.this, TaskDetailActivity.this,
-                                                hour, minute, DateFormat.is24HourFormat(this));
-        timePickerDialog.show();
     }
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
         this.hour = hourOfDay;
-        this.minute =minute;
-
+        this.minute = minute;
+        timeSelected = String.format("%02d:%02d %s", hour, minute, hourOfDay < 12 ? "am" : "pm");
+        taskTime.setText(timeSelected);
     }
 }
-
-
-
-
-        /*taskDescription.setFocusable(false);
-//        taskTitle.setEnabled(false);
-        taskDescription.setClickable(false);
-        taskDescription.setFocusableInTouchMode(false);
-        taskDescription.requestFocus();
-
-        taskStatusDropdownBar.setFocusable(false);
-//        taskTitle.setEnabled(false);
-        taskStatusDropdownBar.setClickable(false);
-        taskStatusDropdownBar.setFocusableInTouchMode(false);
-        taskStatusDropdownBar.requestFocus();
-
-        taskImage.setFocusable(false);
-//        taskTitle.setEnabled(false);
-        taskImage.setClickable(false);
-        taskImage.setFocusableInTouchMode(false);
-        taskImage.requestFocus();
-
-        taskDate.setFocusable(false);
-//        taskTitle.setEnabled(false);
-        taskDate.setClickable(false);
-        taskDate.setFocusableInTouchMode(false);
-        taskDate.requestFocus();*/
-
-        /*InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);*/

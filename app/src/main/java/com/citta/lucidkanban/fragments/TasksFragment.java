@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.citta.lucidkanban.R;
 import com.citta.lucidkanban.activities.TaskDetailActivity;
-import com.citta.lucidkanban.data.Storage;
 import com.citta.lucidkanban.managers.TaskManager;
 import com.citta.lucidkanban.model.Task;
 
@@ -120,6 +119,7 @@ public class TasksFragment extends Fragment {
         private final TextView taskTitleLabel;
         private final TextView taskDescLabel;
         private final TextView taskDateLabel;
+        private final TextView taskTimeLabel;
 
         public MyItemViewHolder(View itemView) {
             super(itemView);
@@ -127,7 +127,8 @@ public class TasksFragment extends Fragment {
 
             taskTitleLabel = itemView.findViewById(R.id.taskTitle);
             taskDescLabel = itemView.findViewById(R.id.taskDescription);
-            taskDateLabel = itemView.findViewById(R.id.task_Date);
+            taskDateLabel = (TextView) itemView.findViewById(R.id.task_item_date);
+            taskTimeLabel = (TextView) itemView.findViewById(R.id.task_item_time);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -142,8 +143,9 @@ public class TasksFragment extends Fragment {
 
         public void hydrate(Task task) {
             taskTitleLabel.setText(task.taskTitle);
-            taskDescLabel.setText(task.taskDescription);
-//            taskDateLabel.setText(task.taskDate);
+            taskDescLabel.setText(task.taskDescription);;
+            taskDateLabel.setText(task.taskDate);
+            taskTimeLabel.setText(task.taskTime);
         }
     }
 
