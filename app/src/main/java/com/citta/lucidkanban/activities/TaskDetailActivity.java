@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import android.view.View;
 
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -34,6 +35,9 @@ import com.citta.lucidkanban.model.Task;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
+
+import static com.citta.lucidkanban.fragments.TasksFragment.EXISTING_ID;
 
 public class TaskDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
         DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -42,13 +46,15 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
     private static final String[] priority = {"LOW", "MEDIUM","HIGH"};*/
     private ImageView taskImage, closeTask, saveTask, taskDateTimePicker, editTask, displayImage;
     private TextView taskTitle, taskDescription, taskDate, taskTime;
-    private Task itemTask;
+    private Task itemTask = null;
     private int year, month, day, hour, minute;
     private String timeSelected;
     private StringBuilder dateSelected;
     private int REQUEST_CAMERA=1, SELECT_FILE=0;
 
 
+    private String existingTaskId = null;
+    //private Boolean isUserClickedExistingTask = false;
 //    private int yearFinal, monthFinal, dayFinal, hoursFinal, minuteFinal;
 
     @Override
@@ -56,7 +62,12 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_task);
-//        int position = getIntent().getExtras().getInt("itemNumber");
+
+        if (getIntent().getExtras() != null) {
+            existingTaskId = getIntent().getExtras().getString(EXISTING_ID, null);
+            //isUserClickedExistingTask = getIntent().getExtras().getBoolean("isUserClickedExistingTask", false);
+        }
+
         taskImage = findViewById(R.id.task_image_bar);
         taskTitle = findViewById(R.id.task_title_view);
         taskDescription = findViewById(R.id.task_description_view);
@@ -70,52 +81,55 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         taskTime = findViewById(R.id.task_time_view);
         displayImage =(ImageView) findViewById(R.id.selected_image);
 
-        spinner();
+        initSpinner();
 
-        final Boolean isUserClickedExistingTask = getIntent().getExtras().getBoolean("isUserClickedExistingTask");
-
-        if (isUserClickedExistingTask) {
+        if ( existingTaskId!=null ) {
             showExistingTask();
-
-            editTask.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    fieldEditMode(taskTitle, true);
-                    fieldEditMode(taskDescription, true);
-                    fieldEditMode(taskStatusDropdownBar, true);
-                    fieldEditMode(taskPrioriyDropdownBar, true);
-                    fieldEditMode(taskImage, true);
-                    fieldEditMode(taskDateTimePicker, true);
-
-                    editTask.setVisibility(View.GONE);
-                    saveTask.setVisibility(View.VISIBLE);
-                }
-            });
-        } else {
+            enableViews(false);
         }
+
+        editTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enableViews(true);
+            }
+        });
+
 
         saveTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // TODO date and others
                 String title = taskTitle.getText().toString();
                 String description = taskDescription.getText().toString();
-                if(!((title.isEmpty()) || (description.isEmpty())))
+                Card.CardPriority priority = (Card.CardPriority) taskPrioriyDropdownBar.getSelectedItem();
+                Card.CardStatus status = (Card.CardStatus) taskStatusDropdownBar.getSelectedItem();
+
+				if((title.isEmpty()) || (description.isEmpty()))
                 {
-                    itemTask = new Task(1, title, description, dateSelected, timeSelected);
+                    Toast.makeText(TaskDetailActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+					return;
+                }
 
+                if ( existingTaskId!=null ) {
+
+                    itemTask.taskTitle = title;
+                    itemTask.taskDescription = description;
+                    itemTask.cardPriority = priority;
+                    itemTask.cardStatus = status;
+
+                    TaskManager.getInstance().replaceExistingTaskItem(itemTask.taskId, itemTask);
+
+                } else {
+
+                    String id = UUID.randomUUID().toString();
+                    itemTask = new Task(id, title, description, dateSelected,timeSelected, priority, status);
                     TaskManager.getInstance().addTaskItem(itemTask);
-                    Toast toast = Toast.makeText(TaskDetailActivity.this, "Saved\n" + "Task Id: " + itemTask.taskId, Toast.LENGTH_SHORT);
-                    toast.show();
-                    finish();
                 }
 
-                else {
-                    Toast toast = Toast.makeText(TaskDetailActivity.this, "Please enter all fields", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-
+                Toast.makeText(TaskDetailActivity.this, "Saved\n" + "Task Id: " + itemTask.taskId, Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
 
@@ -197,30 +211,53 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
     }
 
+    private void enableViews(boolean enable) {
+
+        if (enable) {
+            taskTitle.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            if (imm != null) {
+
+                fieldEditMode(taskTitle, true);
+                fieldEditMode(taskDescription, true);
+                fieldEditMode(taskStatusDropdownBar, true);
+                fieldEditMode(taskPrioriyDropdownBar, true);
+                fieldEditMode(taskImage, true);
+                fieldEditMode(taskDateTimePicker, true);
+
+                editTask.setVisibility(View.GONE);
+                saveTask.setVisibility(View.VISIBLE);
+            }
+
+        } else {
+
+            fieldEditMode(taskTitle, false);
+            fieldEditMode(taskDescription, false);
+            fieldEditMode(taskStatusDropdownBar, false);
+            fieldEditMode(taskPrioriyDropdownBar, false);
+            fieldEditMode(taskImage, false);
+            fieldEditMode(taskDateTimePicker, false);
+
+            editTask.setVisibility(View.VISIBLE);
+            saveTask.setVisibility(View.GONE);
+        }
+    }
+
     public void showExistingTask() {
 
-        List<Task> itemList = TaskManager.getInstance().tasksList;
+        if (existingTaskId == null) return;
 
-        int itemNumber = getIntent().getExtras().getInt("itemNumber");
+        itemTask = TaskManager.getInstance().getTaskWithId(existingTaskId);
 
-        taskTitle.setText(itemList.get(itemNumber).taskTitle);
-        taskDescription.setText(itemList.get(itemNumber).taskDescription);
-        taskDate.setText(itemList.get(itemNumber).taskDate);
-        taskTime.setText(itemList.get(itemNumber).taskTime);
+        if (itemTask == null) return;
 
-        fieldEditMode(taskTitle, false);
-        fieldEditMode(taskDescription, false);
-        fieldEditMode(taskDate, false);
-        fieldEditMode(taskTime, false);
-        fieldEditMode(taskStatusDropdownBar, false);
-        fieldEditMode(taskPrioriyDropdownBar, false);
-        fieldEditMode(taskImage, false);
-        fieldEditMode(taskDateTimePicker, false);
-
-        editTask.setVisibility(View.VISIBLE);
-        saveTask.setVisibility(View.GONE);
-
+		// TODO date etc
+        taskTitle.setText(itemTask.taskTitle);
+        taskDescription.setText(itemTask.taskDescription);
+        taskPrioriyDropdownBar.setSelection(TaskManager.getInstance().getPriorityNumber(itemTask.cardPriority));
     }
+
 
     public void fieldEditMode(View id, Boolean isNonEditMode) {
         if (id == taskTitle || id == taskDescription) {
@@ -249,9 +286,9 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    private void SelectImage(){
+    private void SelectImage() {
 
-        final CharSequence[] items={"Camera","Gallery", "Cancel"};
+        final CharSequence[] items = {"Camera", "Gallery", "Cancel"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(TaskDetailActivity.this);
         builder.setTitle("Add Image");
@@ -278,8 +315,9 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
             }
         });
         builder.show();
-
     }
+
+        
 
     @Override
     public  void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -324,15 +362,9 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
     }
 */
 
-    public void saveTask() {
-        TaskManager.getInstance().addTaskItem(itemTask);
-        Toast toast = Toast.makeText(TaskDetailActivity.this, "Task Saved", Toast.LENGTH_SHORT);
-        toast.show();
-        finish();
-    }
 
     //drop down list to ask user where to add the task(todo , inprogress, completed)
-    public void spinner() {
+    public void initSpinner() {
         ArrayAdapter<Card.CardStatus> adapterCardStatus = new ArrayAdapter<Card.CardStatus>(TaskDetailActivity.this,
                 android.R.layout.simple_spinner_item, Card.CardStatus.values());
 
@@ -346,8 +378,6 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         adapterCardPriority.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         taskPrioriyDropdownBar.setAdapter(adapterCardPriority);
         taskPrioriyDropdownBar.setOnItemSelectedListener(this);
-
-
     }
 
     @Override

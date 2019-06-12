@@ -1,11 +1,13 @@
 package com.citta.lucidkanban.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,8 +16,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.citta.lucidkanban.R;
+import com.citta.lucidkanban.activities.MainActivity;
 import com.citta.lucidkanban.activities.TaskDetailActivity;
 import com.citta.lucidkanban.managers.TaskManager;
+import com.citta.lucidkanban.model.Card;
 import com.citta.lucidkanban.model.Task;
 
 import java.util.List;
@@ -24,16 +28,22 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 
-public class TasksFragment extends Fragment {
+public class TasksFragment extends Fragment implements MainActivity.OnMainViewsClickListener {
 
     private RecyclerView tasksRecyclerView;
     private Context taskFragmentContext;
     private List<Task> itemList;
+    private Card.CardPriority prioritySelected = null;
+
+    public static final String EXISTING_ID = "existingTaskId";
+    public static final String IS_EXISTING_TASK = "isUserClickedExistingTask";
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         taskFragmentContext = context;
+        ((MainActivity)getActivity()).fragmentInterfaceListener = this;
+
     }
 
     @Nullable
@@ -59,7 +69,10 @@ public class TasksFragment extends Fragment {
     }
 
     private void updateItemsListAndNotifyAdapter(Boolean notify) {
-        itemList = TaskManager.getInstance().tasksList;
+        if(prioritySelected != null)
+            itemList = TaskManager.getInstance().getItemsOfPriority(prioritySelected);
+        else
+            itemList = TaskManager.getInstance().tasksList;
 
         if(notify)
             tasksRecyclerView.getAdapter().notifyDataSetChanged();
@@ -76,6 +89,16 @@ public class TasksFragment extends Fragment {
         tasksRecyclerView.setAdapter(sectionAdapter);
     }
 
+    @Override
+    public void onDeleteClicked() {
+        updateItemsListAndNotifyAdapter(true);
+    }
+
+    @Override
+    public void onPriorityButtonClicked(Card.CardPriority cardPriority) {
+        prioritySelected = cardPriority;
+        updateItemsListAndNotifyAdapter(true);
+    }
 
 
     //
@@ -84,14 +107,14 @@ public class TasksFragment extends Fragment {
 
     class MySection extends StatelessSection {
 
-        private List<Task> itemList;
+        //private List<Task> itemList;
 
         public MySection(List<Task> itemList) {
             // call constructor with layout resources for this Section header and items
             super(SectionParameters.builder()
                     .itemResourceId(R.layout.tasks_item)
                     .build());
-            this.itemList = itemList;
+            //this.itemList = itemList;
         }
 
         @Override
@@ -134,9 +157,17 @@ public class TasksFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(taskFragmentContext, TaskDetailActivity.class);
-                    intent.putExtra("itemNumber", getAdapterPosition());
-                    intent.putExtra("isUserClickedExistingTask", true);
+                    intent.putExtra(EXISTING_ID, itemList.get(getAdapterPosition()).taskId);
+                    intent.putExtra(IS_EXISTING_TASK, true);
                     startActivity(intent);
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    showDeleteWarningDialog(getAdapterPosition());
+                    return false;
                 }
             });
         }
@@ -146,6 +177,30 @@ public class TasksFragment extends Fragment {
             taskDescLabel.setText(task.taskDescription);;
             taskDateLabel.setText(task.taskDate);
             taskTimeLabel.setText(task.taskTime);
+        }
+    }
+
+    private void showDeleteWarningDialog(final int adapterPosition) {
+        if ( isVisible() ) {
+
+            AlertDialog.Builder build= new AlertDialog.Builder(taskFragmentContext);
+            build.setTitle("Are you sure you want to remove this task?");
+            build.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    TaskManager.getInstance().removeTaskItem(itemList.get(adapterPosition));
+                    updateItemsListAndNotifyAdapter(true);
+                }
+            });
+            build.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog dialog= build.create();
+            dialog.show();
+
         }
     }
 

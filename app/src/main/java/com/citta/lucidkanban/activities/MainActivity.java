@@ -1,9 +1,11 @@
 package com.citta.lucidkanban.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,14 +15,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.citta.lucidkanban.fragments.TasksFragment;
 import com.citta.lucidkanban.R;
+import com.citta.lucidkanban.managers.TaskManager;
+import com.citta.lucidkanban.model.Card;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    private boolean isClickedNewTask = false;
 
 
     @Override
@@ -35,11 +38,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
 
-                isClickedNewTask = true;
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                //.setAction("Action", null).show();
                 Intent intent = new Intent(MainActivity.this, TaskDetailActivity.class);
-                intent.putExtra("isUserClickedNewTask", isClickedNewTask);
                 startActivity(intent);
 
             }
@@ -56,9 +57,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_tasks);
+        setNavItem(R.id.nav_tasks);
+
     }
-
-
 
 
     @Override
@@ -86,7 +87,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_delete_all) {
+            showDeleteAllWarningDialog();
             return true;
         }
 
@@ -101,32 +103,117 @@ public class MainActivity extends AppCompatActivity
 
         int id = item.getItemId();
 
-        setFragments(id);
-
-        /********if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        }
-        //else if (id == R.id.nav_slideshow) {
-        //} else if (id == R.id.nav_manage) {
-        // }
-        else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }*********/
+        setNavItem(id);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void setFragments(int id) {
-        switch (id){
+    private void setNavItem(int id) {
+
+        switch (id) {
             case R.id.nav_tasks:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new TasksFragment()).commit();
+                break;
+
+            case R.id.low_priority_task:
+                fragmentInterfaceListener.onPriorityButtonClicked(Card.CardPriority.LOW);
+                break;
+
+            case R.id.med_priority_task:
+                fragmentInterfaceListener.onPriorityButtonClicked(Card.CardPriority.MEDIUM);
+                break;
+
+            case R.id.high_priority_task:
+                fragmentInterfaceListener.onPriorityButtonClicked(Card.CardPriority.HIGH);
+                break;
+
+            case R.id.nav_share:
+                openSharingMenuWindow();
+                break;
+
+            case R.id.nav_feedback:
+                openFeedbackWindow();
+                break;
         }
     }
+
+    protected void openFeedbackWindow() {
+
+        String to = "cittagroup@gmail.com";
+        String subject = "Feedback for Lucid Kanban App";
+        String message = "Thank you for taking interest in providing feeedback!\n\n Please provide your feedback here.\n";
+
+        Intent email = new Intent(Intent.ACTION_SEND);
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
+        email.putExtra(Intent.EXTRA_SUBJECT, subject);
+        email.putExtra(Intent.EXTRA_TEXT, message);
+
+        // need this to prompts email client only
+        email.setType("message/rfc822");
+        try {
+            startActivity(Intent.createChooser(email, "Choose an Email client :"));
+            Log.i("Finished sending email", "");
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(MainActivity.this,
+                    "There is no email client installed.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void openSharingMenuWindow() {
+        Intent intentInvite = new Intent(Intent.ACTION_SEND);
+        intentInvite.setType("text/plain");
+        String link = "Enjoy free Note saving and tracking app\n\nhttps://play.google.com/store/apps/details?id=com.citta.lucidkanban";
+        String subject = "Lucid Kanban App";
+        intentInvite.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intentInvite.putExtra(Intent.EXTRA_TEXT, link);
+        startActivity(Intent.createChooser(intentInvite, "Share using"));
+    }
+
+    private void showDeleteAllWarningDialog() {
+
+        AlertDialog.Builder build = new AlertDialog.Builder(this);
+        build.setTitle("Are you sure you want to delete all your tasks?");
+        build.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                TaskManager.getInstance().removeAllTasks();
+                fragmentInterfaceListener.onDeleteClicked();
+            }
+        });
+        build.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog dialog = build.create();
+        dialog.show();
+
+    }
+
+    public OnMainViewsClickListener fragmentInterfaceListener;
+
+    public interface OnMainViewsClickListener {
+        void onDeleteClicked();
+        void onPriorityButtonClicked(Card.CardPriority cardPriority);
+    }
 }
+
+
+/********if (id == R.id.nav_camera) {
+ // Handle the camera action
+ } else if (id == R.id.nav_gallery) {
+
+ }
+ //else if (id == R.id.nav_slideshow) {
+ //} else if (id == R.id.nav_manage) {
+ // }
+ else if (id == R.id.nav_share) {
+
+ } else if (id == R.id.nav_send) {
+
+ }*********/
