@@ -50,11 +50,11 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
     private int year, month, day, hour, minute;
     private String timeSelected;
     private StringBuilder dateSelected;
-    private int REQUEST_CAMERA=1, SELECT_FILE=0;
+    private int REQUEST_CAMERA = 1, SELECT_FILE = 0;
 
 
     private String existingTaskId = null;
-    //private Boolean isUserClickedExistingTask = false;
+    private Boolean isUserClickedExistingTask = false;
 //    private int yearFinal, monthFinal, dayFinal, hoursFinal, minuteFinal;
 
     @Override
@@ -65,7 +65,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
         if (getIntent().getExtras() != null) {
             existingTaskId = getIntent().getExtras().getString(EXISTING_ID, null);
-            //isUserClickedExistingTask = getIntent().getExtras().getBoolean("isUserClickedExistingTask", false);
+            isUserClickedExistingTask = getIntent().getExtras().getBoolean("isUserClickedExistingTask", false);
         }
 
         taskImage = findViewById(R.id.task_image_bar);
@@ -79,11 +79,11 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         editTask = findViewById(R.id.edit_task_bar);
         taskDate = findViewById(R.id.task_date_view);
         taskTime = findViewById(R.id.task_time_view);
-        displayImage =(ImageView) findViewById(R.id.selected_image);
+        displayImage = (ImageView) findViewById(R.id.selected_image);
 
         initSpinner();
 
-        if ( existingTaskId!=null ) {
+        if (existingTaskId != null) {
             showExistingTask();
             enableViews(false);
         }
@@ -106,13 +106,12 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                 Card.CardPriority priority = (Card.CardPriority) taskPrioriyDropdownBar.getSelectedItem();
                 Card.CardStatus status = (Card.CardStatus) taskStatusDropdownBar.getSelectedItem();
 
-				if((title.isEmpty()) || (description.isEmpty()))
-                {
+                if ((title.isEmpty()) || (description.isEmpty())) {
                     Toast.makeText(TaskDetailActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
-					return;
+                    return;
                 }
 
-                if ( existingTaskId!=null ) {
+                if (existingTaskId != null) {
 
                     itemTask.taskTitle = title;
                     itemTask.taskDescription = description;
@@ -124,7 +123,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                 } else {
 
                     String id = UUID.randomUUID().toString();
-                    itemTask = new Task(id, title, description, dateSelected,timeSelected, priority, status);
+                    itemTask = new Task(id, title, description, dateSelected, timeSelected, priority, status);
                     TaskManager.getInstance().addTaskItem(itemTask);
                 }
 
@@ -133,11 +132,10 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
             }
         });
 
-        displayImage.setOnClickListener(new View.OnClickListener() {
+        taskImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SelectImage();
-
             }
         });
 
@@ -183,13 +181,16 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
                 String title = taskTitle.getText().toString();
                 String description = taskDescription.getText().toString();
-                Boolean check = getIntent().getExtras().getBoolean("isUserClickedExistingTask");
-                if((title.isEmpty()) & (description.isEmpty())){
+
+                if ((title.isEmpty()) & (description.isEmpty())) {
+
                     finish();
-                    }
-                else if(check){finish();}
-                else {
-                    AlertDialog.Builder build= new AlertDialog.Builder(TaskDetailActivity.this);
+                } else if (isUserClickedExistingTask) {
+
+                    finish();
+                } else {
+
+                    AlertDialog.Builder build = new AlertDialog.Builder(TaskDetailActivity.this);
                     build.setTitle("Discard data entered?");
                     build.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                         @Override
@@ -203,7 +204,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                             dialog.cancel();
                         }
                     });
-                    AlertDialog dialog= build.create();
+                    AlertDialog dialog = build.create();
                     dialog.show();
                 }
             }
@@ -214,6 +215,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
     private void enableViews(boolean enable) {
 
         if (enable) {
+
             taskTitle.requestFocus();
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -252,13 +254,16 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
         if (itemTask == null) return;
 
-		// TODO date etc
+        // TODO date etc
         taskTitle.setText(itemTask.taskTitle);
         taskDescription.setText(itemTask.taskDescription);
+        taskDate.setText(itemTask.taskDate);
+        taskTime.setText(itemTask.taskTime);
         taskPrioriyDropdownBar.setSelection(TaskManager.getInstance().getPriorityNumber(itemTask.cardPriority));
+//        taskStatusDropdownBar.setSelection(TaskManager.getInstance().getPriorityNumber(itemTask.cardStatus));
     }
 
-
+    //Todo complex
     public void fieldEditMode(View id, Boolean isNonEditMode) {
         if (id == taskTitle || id == taskDescription) {
             id.setFocusable(isNonEditMode);
@@ -317,21 +322,20 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         builder.show();
     }
 
-        
 
     @Override
-    public  void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode,data);
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode== Activity.RESULT_OK){
+        if (resultCode == Activity.RESULT_OK) {
 
-            if(requestCode==REQUEST_CAMERA){
+            if (requestCode == REQUEST_CAMERA) {
 
                 Bundle bundle = data.getExtras();
                 final Bitmap bmp = (Bitmap) bundle.get("data");
                 displayImage.setImageBitmap(bmp);
 
-            }else if(requestCode==SELECT_FILE){
+            } else if (requestCode == SELECT_FILE) {
 
                 Uri selectedImageUri = data.getData();
                 displayImage.setImageURI(selectedImageUri);
@@ -340,28 +344,6 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         }
 
     }
-
-/*
-    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
-        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-        switch(requestCode) {
-            case 0:
-                if(resultCode == REQUEST_CAMERA){
-                    Uri selectedImage = imageReturnedIntent.getData();
-                    displayImage.setImageURI(selectedImage);
-                }
-
-                break;
-            case 1:
-                if(resultCode == SELECT_FILE){
-                    Uri selectedImage = imageReturnedIntent.getData();
-                    displayImage.setImageURI(selectedImage);
-                }
-                break;
-        }
-    }
-*/
-
 
     //drop down list to ask user where to add the task(todo , inprogress, completed)
     public void initSpinner() {
