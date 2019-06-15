@@ -1,5 +1,6 @@
 package com.citta.lucidkanban.activities;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.citta.lucidkanban.fragments.TasksFragment;
@@ -25,6 +27,8 @@ import com.citta.lucidkanban.model.Card;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    TextView welcomeTitle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +37,13 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        welcomeTitle = findViewById(R.id.inner_welcome_title);
+
         FloatingActionButton fab = findViewById(R.id.add_task_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //.setAction("Action", null).show();
                 Intent intent = new Intent(MainActivity.this, TaskDetailActivity.class);
                 startActivity(intent);
 
@@ -110,24 +114,50 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
     private void setNavItem(int id) {
 
         switch (id) {
             case R.id.nav_tasks:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new TasksFragment()).commit();
+                welcomeTitle.setText(getString(R.string.welcome_title_tasks));
                 break;
 
             case R.id.low_priority_task:
                 fragmentInterfaceListener.onPriorityButtonClicked(Card.CardPriority.LOW);
+                welcomeTitle.setText(getString(R.string.welcome_title_low));
                 break;
 
             case R.id.med_priority_task:
                 fragmentInterfaceListener.onPriorityButtonClicked(Card.CardPriority.MEDIUM);
+                welcomeTitle.setText(getString(R.string.welcome_title_medium));
                 break;
 
             case R.id.high_priority_task:
                 fragmentInterfaceListener.onPriorityButtonClicked(Card.CardPriority.HIGH);
+                welcomeTitle.setText(getString(R.string.welcome_title_high));
+                break;
+
+            case R.id.nav_kanban:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new TasksFragment()).commit();
+                welcomeTitle.setText(getString(R.string.welcome_title_board));
+                break;
+
+            case R.id.todo:
+                fragmentInterfaceListener.onStatusButtonClicked(Card.CardStatus.TODO);
+                welcomeTitle.setText(getString(R.string.welcome_title_todo));
+                break;
+
+            case R.id.inprogress:
+                fragmentInterfaceListener.onStatusButtonClicked(Card.CardStatus.INPROGRESS);
+                welcomeTitle.setText(getString(R.string.welcome_title_inprogress));
+                break;
+
+            case R.id.completed:
+                fragmentInterfaceListener.onStatusButtonClicked(Card.CardStatus.COMPLETED);
+                welcomeTitle.setText(getString(R.string.welcome_title_completed));
                 break;
 
             case R.id.nav_share:
@@ -139,6 +169,7 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
 
     protected void openFeedbackWindow() {
 
@@ -200,6 +231,7 @@ public class MainActivity extends AppCompatActivity
     public interface OnMainViewsClickListener {
         void onDeleteClicked();
         void onPriorityButtonClicked(Card.CardPriority cardPriority);
+        void onStatusButtonClicked(Card.CardStatus cardStatus);
     }
 }
 

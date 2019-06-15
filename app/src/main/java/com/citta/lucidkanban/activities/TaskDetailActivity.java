@@ -260,7 +260,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         taskDate.setText(itemTask.taskDate);
         taskTime.setText(itemTask.taskTime);
         taskPrioriyDropdownBar.setSelection(TaskManager.getInstance().getPriorityNumber(itemTask.cardPriority));
-//        taskStatusDropdownBar.setSelection(TaskManager.getInstance().getPriorityNumber(itemTask.cardStatus));
+        taskStatusDropdownBar.setSelection(TaskManager.getInstance().getStatusNumber(itemTask.cardStatus));
     }
 
     //Todo complex

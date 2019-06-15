@@ -22,6 +22,25 @@
             android:icon="@drawable/dot"
             android:title="High Priority" />
     </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_kanban"
+            android:icon="@drawable/ic_developer_board_black"
+            android:title="KANBAN BOARD" />
+
+        <item
+            android:id="@+id/todo"
+            android:icon="@drawable/dot"
+            android:title="To-Do" />
+        <item
+            android:id="@+id/inprogress"
+            android:icon="@drawable/dot"
+            android:title="In Progress" />
+        <item
+            android:id="@+id/completed"
+            android:icon="@drawable/dot"
+            android:title="Completed" />
+    </group>
 
     <item android:title="Communicate">
         <menu>

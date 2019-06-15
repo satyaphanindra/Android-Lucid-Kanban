@@ -74,6 +74,18 @@ public class TaskManager {
         }
         return priorityList;
     }
+    public List<Task> getItemsOfStatus(Card.CardStatus cardStatus) {
+        List<Task> statusList = new ArrayList<>();
+        int i = 0;
+        for(Task taskItem : tasksList) {
+            if(taskItem.cardStatus.equals(cardStatus)) {
+                //found it!
+                statusList.add(taskItem);
+            }
+            i++;
+        }
+        return statusList;
+    }
 
     public void removeTaskItem(Task item) {
         tasksList.remove(item);
@@ -109,6 +121,16 @@ public class TaskManager {
         else if(cardPriority.equals(Card.CardPriority.MEDIUM))
             itemSelected = 1;
         else if(cardPriority.equals(Card.CardPriority.HIGH))
+            itemSelected = 2;
+        return itemSelected;
+    }
+    public int getStatusNumber(Card.CardStatus cardStatus) {
+        int itemSelected = 0;
+        if(cardStatus.equals(Card.CardStatus.TODO))
+            itemSelected = 0;
+        else if(cardStatus.equals(Card.CardStatus.INPROGRESS))
+            itemSelected = 1;
+        else if(cardStatus.equals(Card.CardStatus.COMPLETED))
             itemSelected = 2;
         return itemSelected;
     }

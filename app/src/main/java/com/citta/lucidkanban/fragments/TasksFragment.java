@@ -34,6 +34,7 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
     private Context taskFragmentContext;
     private List<Task> itemList;
     private Card.CardPriority prioritySelected = null;
+    private Card.CardStatus statusSelected = null;
 
     public static final String EXISTING_ID = "existingTaskId";
     public static final String IS_EXISTING_TASK = "isUserClickedExistingTask";
@@ -71,6 +72,9 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
     private void updateItemsListAndNotifyAdapter(Boolean notify) {
         if(prioritySelected != null)
             itemList = TaskManager.getInstance().getItemsOfPriority(prioritySelected);
+
+        else if(statusSelected!= null)
+            itemList = TaskManager.getInstance().getItemsOfStatus(statusSelected);
         else
             itemList = TaskManager.getInstance().tasksList;
 
@@ -97,6 +101,11 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
     @Override
     public void onPriorityButtonClicked(Card.CardPriority cardPriority) {
         prioritySelected = cardPriority;
+        updateItemsListAndNotifyAdapter(true);
+    }
+    @Override
+    public void onStatusButtonClicked(Card.CardStatus cardStatus) {
+        statusSelected = cardStatus;
         updateItemsListAndNotifyAdapter(true);
     }
 
