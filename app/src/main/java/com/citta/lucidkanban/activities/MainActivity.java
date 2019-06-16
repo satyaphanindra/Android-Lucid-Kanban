@@ -3,8 +3,12 @@ package com.citta.lucidkanban.activities;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -81,6 +85,27 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        String message = String.format ("You have %d tasks!", TaskManager.getInstance().tasksList.size());
+        View parentLayout = findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar.make(parentLayout, message, Snackbar.LENGTH_LONG);
+        snackbar.setAction("Ok", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        })
+        .setActionTextColor(getResources().getColor(R.color.colorPrimary))
+        .show();
+
+        Typeface typeface = ResourcesCompat.getFont(this, R.font.roboto_regular);
+        TextView snackbarActionTextView = (TextView) snackbar.getView().findViewById( android.support.design.R.id.snackbar_action );
+        TextView snackbarTextView = (TextView) snackbar.getView().findViewById( android.support.design.R.id.snackbar_text );
+        snackbarActionTextView.setTextSize( 16 );
+        snackbarTextView.setTextSize( 16 );
+        snackbarActionTextView.setTypeface(typeface);
+        snackbarTextView.setTypeface(typeface);
+
+        //Other stuff in OnCreate();
     }
 
     @Override
@@ -137,7 +162,7 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.nav_tasks:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new TasksFragment()).commit();
+                        TasksFragment.newInstance(false)).commit();
                 welcomeTitle.setText(getString(R.string.welcome_title_tasks));
                 break;
 
@@ -158,7 +183,7 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.nav_kanban:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new TasksFragment()).commit();
+                        TasksFragment.newInstance(true)).commit();
                 welcomeTitle.setText(getString(R.string.welcome_title_board));
                 break;
 

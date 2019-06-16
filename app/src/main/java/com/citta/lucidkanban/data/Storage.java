@@ -26,6 +26,7 @@ public class Storage {
     public void store(Object object, String fileName, Directory directoryName) {
         try {
             File directory = context.getDir(directoryName.getPathName(), Context.MODE_PRIVATE);
+            //File directory = new File(context.getFilesDir(), directoryName.getPathName());
             File file = new File(directory, fileName);
 
             FileOutputStream fileOut =
@@ -45,6 +46,7 @@ public class Storage {
 
         try {
             File directory = context.getDir(directoryName.getPathName(), Context.MODE_PRIVATE);
+            //File directory = new File(context.getFilesDir(), directoryName.getPathName());
             File file = new File(directory, fileName);
             FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream in = new ObjectInputStream(fileIn);

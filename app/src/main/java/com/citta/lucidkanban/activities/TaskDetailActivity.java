@@ -1,16 +1,22 @@
 package com.citta.lucidkanban.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
@@ -29,11 +35,13 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.text.format.DateFormat;
 
+import com.citta.lucidkanban.LucidApplication;
 import com.citta.lucidkanban.R;
 import com.citta.lucidkanban.managers.TaskManager;
 import com.citta.lucidkanban.model.Card;
 import com.citta.lucidkanban.model.Task;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -49,8 +57,9 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
     private int year, month, day, hour, minute;
     private String timeSelected;
     private StringBuilder dateSelected;
-    private int REQUEST_CAMERA = 1, SELECT_FILE = 0;
     private LinearLayout spinnerStatusLayout, spinnerPriorityLayout;
+    private static final int REQUEST_CAMERA = 1, SELECT_FILE = 123;
+    private String selectedImagePath = null;
 
 
     private String existingTaskId = null;
@@ -133,16 +142,20 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                     itemTask.taskDescription = description;
                     itemTask.cardPriority = priority;
                     itemTask.cardStatus = status;
+                    itemTask.taskDate = dateSelected;
+                    itemTask.taskTime = timeSelected;
 
+                    itemTask.taskImagePath = selectedImagePath;
                     TaskManager.getInstance().replaceExistingTaskItem(itemTask.taskId, itemTask);
 
                 } else {
 
-                    String id = UUID.randomUUID().toString();
-                    itemTask = new Task(id, title, description, dateSelected, timeSelected, priority, status);
+                    String id = UUID.randomUUID().toString(); // Must be called only once
+                    itemTask = new Task(id, title, description, dateSelected, timeSelected, priority, status, selectedImagePath);
                     TaskManager.getInstance().addTaskItem(itemTask);
                 }
 
+                TaskManager.getInstance().saveTask(LucidApplication.getInstance());
                 Toast.makeText(TaskDetailActivity.this, "Saved\n" + "Task Id: " + itemTask.taskId, Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -276,6 +289,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         taskTime.setText(itemTask.taskTime);
         taskPriorityDropdownBar.setSelection(TaskManager.getInstance().getPriorityNumber(itemTask.cardPriority));
         taskStatusDropdownBar.setSelection(TaskManager.getInstance().getStatusNumber(itemTask.cardStatus));
+        displayImage.setImageBitmap(BitmapFactory.decodeFile(itemTask.taskImagePath));
     }
 
     //Todo complex
@@ -317,7 +331,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
     private void SelectImage() {
 
-        final CharSequence[] items = {"Camera", "Gallery", "Cancel"};
+        final CharSequence[] items = {/*"Camera", */"Gallery", "Cancel"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(TaskDetailActivity.this);
         builder.setTitle("Add Image");
@@ -333,10 +347,12 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
                 } else if (items[i].equals("Gallery")) {
 
-                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    intent.setType("image/*");
-//                    startActivityForResult(intent.createChooser(intent, "Select File"), SELECT_FILE);
-                    startActivityForResult(intent, SELECT_FILE);
+                    if (ActivityCompat.checkSelfPermission(TaskDetailActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(TaskDetailActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, SELECT_FILE);
+                    } else {
+                        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(galleryIntent, SELECT_FILE);
+                    }
 
                 } else if (items[i].equals("Cancel")) {
                     dialogInterface.dismiss();
@@ -346,6 +362,21 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         builder.show();
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults)
+    {
+        switch (requestCode) {
+            case SELECT_FILE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(galleryIntent, SELECT_FILE);
+                } else {
+                    //do something like displaying a message that he didn`t allow the app to access gallery and you wont be able to let him select from gallery
+                }
+                break;
+        }
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -361,12 +392,29 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
             } else if (requestCode == SELECT_FILE) {
 
-                Uri selectedImageUri = data.getData();
-                displayImage.setImageURI(selectedImageUri);
+//                Uri uri = data.getData();
+//                if (uri != null) {
+//                    selectedImagePath = uri.getPath();
+//                }
+//                displayImage.setImageURI(uri);
+
+                //data.getData return the content URI for the selected Image
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                // Get the cursor
+                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                // Move to first row
+                cursor.moveToFirst();
+                //Get the column index of MediaStore.Images.Media.DATA
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                //Gets the String value in the column
+                String imgDecodableString = cursor.getString(columnIndex);
+                cursor.close();
+                // Set the Image in ImageView after decoding the String
+                selectedImagePath = imgDecodableString;
+                displayImage.setImageBitmap(BitmapFactory.decodeFile(selectedImagePath));
             }
-
         }
-
     }
 
     //drop down list to ask user where to add the task(todo , inprogress, completed)

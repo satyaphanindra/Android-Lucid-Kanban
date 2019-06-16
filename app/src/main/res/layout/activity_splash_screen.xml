@@ -4,24 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightGray"
+    android:theme="@style/SplashTheme"
     tools:context=".activities.SplashScreenActivity">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerInParent="true"
-        android:src="@mipmap/ic_launcher" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="70dp"
-        android:text="Lucid Tasks"
-        android:textColor="@color/jetBlack"
-        android:textSize="30dp"
-        android:textStyle="bold" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/splash_screen"
+        android:scaleType="centerCrop"
+        android:paddingEnd="-2dp"/>
+    </FrameLayout>
 
 </RelativeLayout>
