@@ -1,7 +1,5 @@
 package com.citta.lucidkanban.model;
 
-import android.net.Uri;
-
 import com.citta.lucidkanban.model.Card.CardStatus;
 import com.citta.lucidkanban.model.Card.CardPriority;
 
@@ -15,10 +13,10 @@ public class Task implements Serializable {
     public String taskTime;
     public CardPriority cardPriority = CardPriority.LOW;
     public CardStatus cardStatus = CardStatus.TODO;
-    public Uri taskImageUri = null;
+    public String taskImagePath = null;
 
     public Task(String taskId, String taskTitle, String taskDescription, StringBuilder taskDate, String taskTime,
-                CardPriority cardPriority, CardStatus cardStatus, Uri taskImageUri)
+                CardPriority cardPriority, CardStatus cardStatus, String taskImagePath)
     {
         this.taskId = taskId;
         this.taskTitle = taskTitle;
@@ -27,7 +25,7 @@ public class Task implements Serializable {
         this.taskTime = taskTime;
         this.cardPriority = cardPriority;
         this.cardStatus = cardStatus;
-        this.taskImageUri = taskImageUri;
+        this.taskImagePath = taskImagePath;
     }
 
 }
