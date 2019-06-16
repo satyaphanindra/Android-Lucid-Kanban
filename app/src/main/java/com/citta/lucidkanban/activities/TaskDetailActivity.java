@@ -28,6 +28,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.text.format.DateFormat;
 
+import com.citta.lucidkanban.LucidApplication;
 import com.citta.lucidkanban.R;
 import com.citta.lucidkanban.managers.TaskManager;
 import com.citta.lucidkanban.model.Card;
@@ -51,6 +52,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
     private String timeSelected;
     private StringBuilder dateSelected;
     private int REQUEST_CAMERA = 1, SELECT_FILE = 0;
+    private Uri selectedImageUri = null;
 
 
     private String existingTaskId = null;
@@ -122,11 +124,12 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
                 } else {
 
-                    String id = UUID.randomUUID().toString();
-                    itemTask = new Task(id, title, description, dateSelected, timeSelected, priority, status);
+                    String id = UUID.randomUUID().toString(); // Must be called only once
+                    itemTask = new Task(id, title, description, dateSelected, timeSelected, priority, status, selectedImageUri);
                     TaskManager.getInstance().addTaskItem(itemTask);
                 }
 
+                TaskManager.getInstance().saveTask(LucidApplication.getInstance());
                 Toast.makeText(TaskDetailActivity.this, "Saved\n" + "Task Id: " + itemTask.taskId, Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -337,7 +340,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
             } else if (requestCode == SELECT_FILE) {
 
-                Uri selectedImageUri = data.getData();
+                selectedImageUri = data.getData();
                 displayImage.setImageURI(selectedImageUri);
             }
 

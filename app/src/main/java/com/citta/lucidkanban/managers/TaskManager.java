@@ -8,6 +8,7 @@ import com.citta.lucidkanban.model.Card;
 import com.citta.lucidkanban.model.Task;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -110,8 +111,10 @@ public class TaskManager {
 
     public void initialize() {
         Storage storage = new Storage(LucidApplication.getInstance());
-        List<Task> itemList = (List<Task>) storage.retrieve("File", Storage.Directory.Documents);
-        tasksList = itemList;
+        List<Task> itemList = (List<Task>) storage.retrieve("TasksFile", Storage.Directory.Documents);
+        if (itemList!=null) { // BUG of a BITCH
+            tasksList = itemList;
+        }
     }
 
     public int getPriorityNumber(Card.CardPriority cardPriority) {

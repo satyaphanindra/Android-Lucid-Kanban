@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.citta.lucidkanban.R;
@@ -22,6 +23,7 @@ import com.citta.lucidkanban.managers.TaskManager;
 import com.citta.lucidkanban.model.Card;
 import com.citta.lucidkanban.model.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters;
@@ -32,18 +34,37 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
 
     private RecyclerView tasksRecyclerView;
     private Context taskFragmentContext;
-    private List<Task> itemList;
+    private List<Task> itemList = new ArrayList<>();
     private Card.CardPriority prioritySelected = null;
     private Card.CardStatus statusSelected = null;
 
     public static final String EXISTING_ID = "existingTaskId";
     public static final String IS_EXISTING_TASK = "isUserClickedExistingTask";
+    private boolean isKanbanPage = false;
+
+    public static TasksFragment newInstance(boolean isKanbanPage) {
+        TasksFragment myFragment = new TasksFragment();
+
+        Bundle args = new Bundle();
+        args.putBoolean("KANBAN", isKanbanPage);
+        myFragment.setArguments(args);
+
+        return myFragment;
+    }
+
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         taskFragmentContext = context;
         ((MainActivity)getActivity()).fragmentInterfaceListener = this;
+
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        isKanbanPage = getArguments() != null && getArguments().getBoolean("KANBAN", false);
 
     }
 
@@ -59,6 +80,7 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //itemList = TaskManager.getInstance().tasksList;
         updateItemsListAndNotifyAdapter(false);
         initializeRecyclerView();
     }
@@ -70,10 +92,9 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
     }
 
     private void updateItemsListAndNotifyAdapter(Boolean notify) {
-        if(prioritySelected != null)
+        if(prioritySelected != null && !isKanbanPage)
             itemList = TaskManager.getInstance().getItemsOfPriority(prioritySelected);
-
-        else if(statusSelected!= null)
+        else if(statusSelected!= null && isKanbanPage)
             itemList = TaskManager.getInstance().getItemsOfStatus(statusSelected);
         else
             itemList = TaskManager.getInstance().tasksList;
@@ -88,7 +109,7 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
         final SectionedRecyclerViewAdapter sectionAdapter = new SectionedRecyclerViewAdapter();
 
         // Add your Sections
-        sectionAdapter.addSection(new MySection(itemList));
+        sectionAdapter.addSection(new MySection());
         tasksRecyclerView.setLayoutManager(new LinearLayoutManager(taskFragmentContext, LinearLayoutManager.VERTICAL, false));
         tasksRecyclerView.setAdapter(sectionAdapter);
     }
@@ -101,11 +122,20 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
     @Override
     public void onPriorityButtonClicked(Card.CardPriority cardPriority) {
         prioritySelected = cardPriority;
+        if(isKanbanPage){
+            isKanbanPage = false;
+            initializeRecyclerView();
+        }
+
         updateItemsListAndNotifyAdapter(true);
     }
     @Override
     public void onStatusButtonClicked(Card.CardStatus cardStatus) {
         statusSelected = cardStatus;
+        if(!isKanbanPage){
+            isKanbanPage = true;
+            initializeRecyclerView();
+        }
         updateItemsListAndNotifyAdapter(true);
     }
 
@@ -116,14 +146,11 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
 
     class MySection extends StatelessSection {
 
-        //private List<Task> itemList;
-
-        public MySection(List<Task> itemList) {
+        public MySection() {
             // call constructor with layout resources for this Section header and items
             super(SectionParameters.builder()
                     .itemResourceId(R.layout.tasks_item)
                     .build());
-            //this.itemList = itemList;
         }
 
         @Override
@@ -152,15 +179,20 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
         private final TextView taskDescLabel;
         private final TextView taskDateLabel;
         private final TextView taskTimeLabel;
+        private final ImageView taskImage;
+
+        private View view = null;
 
         public MyItemViewHolder(View itemView) {
             super(itemView);
 
+            view = itemView;
 
             taskTitleLabel = itemView.findViewById(R.id.taskTitle);
             taskDescLabel = itemView.findViewById(R.id.taskDescription);
             taskDateLabel = (TextView) itemView.findViewById(R.id.task_item_date);
             taskTimeLabel = (TextView) itemView.findViewById(R.id.task_item_time);
+            taskImage = (ImageView) itemView.findViewById(R.id.taskImage);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -179,13 +211,33 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
                     return false;
                 }
             });
+
         }
 
         public void hydrate(Task task) {
+            if (task.taskImageUri != null) {
+                taskImage.setVisibility(View.VISIBLE);
+                taskImage.setImageURI(task.taskImageUri);
+            }
+            else {
+                taskImage.setVisibility(View.GONE);
+            }
+
             taskTitleLabel.setText(task.taskTitle);
             taskDescLabel.setText(task.taskDescription);;
             taskDateLabel.setText(task.taskDate);
             taskTimeLabel.setText(task.taskTime);
+            if(view!=null && isKanbanPage){
+                switch (task.cardStatus) {
+                    case TODO: view.setBackgroundColor(getResources().getColor(R.color.todoColor));
+                        break;
+                    case INPROGRESS: view.setBackgroundColor(getResources().getColor(R.color.progressColor));
+                        break;
+                    case COMPLETED: view.setBackgroundColor(getResources().getColor(R.color.completedColor));
+                        break;
+                }
+
+            }
         }
     }
 
