@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single"
+        android:id="@+id/tools">
         <item
             android:id="@+id/nav_tasks"
             android:icon="@drawable/ic_format_list_numbered_white"

@@ -59,7 +59,8 @@
             android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_marginTop="6dp"
-            android:background="@drawable/rounded_rectangle"
+            android:background="@drawable/rounded_background"
+            android:backgroundTint="@color/white"
             android:fontFamily="@font/roboto_medium"
             android:hint="@string/title"
             android:inputType="textMultiLine"
@@ -80,7 +81,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:background="@drawable/rounded_rectangle"
+            android:background="@drawable/rounded_background"
+            android:backgroundTint="@color/white"
             android:fontFamily="@font/roboto_medium"
             android:gravity="top"
             android:hint="@string/short_description"
@@ -111,7 +113,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_toEndOf="@+id/status_bar"
-                android:background="@drawable/rounded_rectangle"
+                android:background="@drawable/rounded_background"
+                android:backgroundTint="@color/white"
                 android:gravity="end">
 
                 <Spinner
@@ -143,7 +146,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_toEndOf="@+id/priority_bar"
-                android:background="@drawable/rounded_rectangle"
+                android:background="@drawable/rounded_background"
+                android:backgroundTint="@color/white"
                 android:gravity="end">
 
                 <Spinner
@@ -167,13 +171,14 @@
                 android:text="@string/date_time"
                 android:textColor="@color/jetBlack"
                 android:textSize="@dimen/element_spacing_medium" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/roboto_medium"
                 android:layout_alignParentEnd="true"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="30dp"
+                android:fontFamily="@font/roboto_medium"
                 android:text="Image:"
                 android:textColor="@color/jetBlack"
                 android:textSize="@dimen/element_spacing_medium" />
@@ -189,7 +194,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_medium"
-                android:text="Date:"
+                android:text="Date :"
                 android:textColor="@color/jetBlack" />
 
             <TextView
@@ -199,7 +204,7 @@
                 android:layout_below="@id/task_Date"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/roboto_medium"
-                android:text="Time:"
+                android:text="Time :"
                 android:textColor="@color/jetBlack" />
 
             <RelativeLayout
@@ -211,25 +216,24 @@
                     android:id="@+id/task_date_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_medium"
-                    android:text="Select Date" />
+                    android:fontFamily="@font/roboto_medium" />
 
                 <TextView
                     android:id="@+id/task_time_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="28dp"
-                    android:fontFamily="@font/roboto_medium"
-                    android:text="Select Time" />
+                    android:fontFamily="@font/roboto_medium" />
             </RelativeLayout>
+
             <ImageView
                 android:id="@+id/selected_image"
                 android:layout_width="80dp"
                 android:layout_height="50dp"
-                android:layout_marginEnd="10dp"
                 android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/image_select"/>
+                android:src="@drawable/image_select" />
 
         </RelativeLayout>
     </LinearLayout>

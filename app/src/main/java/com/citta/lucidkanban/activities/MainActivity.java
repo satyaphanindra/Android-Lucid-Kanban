@@ -24,20 +24,27 @@ import com.citta.lucidkanban.R;
 import com.citta.lucidkanban.managers.TaskManager;
 import com.citta.lucidkanban.model.Card;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import static com.citta.lucidkanban.R.layout.activity_main;
 
-    TextView welcomeTitle;
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener{
+
+    private TextView welcomeTitle;
+    private TextView totalNoOfTasks;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         welcomeTitle = findViewById(R.id.inner_welcome_title);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View hView = navigationView.getHeaderView(0);
+        totalNoOfTasks = (TextView) hView.findViewById(R.id.total_tasks);
 
         FloatingActionButton fab = findViewById(R.id.add_task_fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -46,25 +53,35 @@ public class MainActivity extends AppCompatActivity
 
                 Intent intent = new Intent(MainActivity.this, TaskDetailActivity.class);
                 startActivity(intent);
-
             }
         });
 
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.nav_tasks);
         setNavItem(R.id.nav_tasks);
 
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+
+                totalNoOfTasks.setText(String.valueOf(TaskManager.getInstance().tasksList.size()));
+            }
+        };
+
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+
+
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     @Override
     public void onBackPressed() {
@@ -106,7 +123,6 @@ public class MainActivity extends AppCompatActivity
 
 
         int id = item.getItemId();
-
         setNavItem(id);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -115,6 +131,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @SuppressLint("ResourceAsColor")
     private void setNavItem(int id) {
 
         switch (id) {
@@ -173,9 +190,9 @@ public class MainActivity extends AppCompatActivity
 
     protected void openFeedbackWindow() {
 
-        String to = "cittagroup@gmail.com";
+        String to = "manipamulapati@gmail.com";
         String subject = "Feedback for Lucid Kanban App";
-        String message = "Thank you for taking interest in providing feeedback!\n\n Please provide your feedback here.\n";
+        String message = "Thank you for taking interest in providing feedback!\n\n Please provide your feedback here.\n";
 
         Intent email = new Intent(Intent.ACTION_SEND);
         email.putExtra(Intent.EXTRA_EMAIL, new String[]{to});
@@ -229,23 +246,15 @@ public class MainActivity extends AppCompatActivity
     public OnMainViewsClickListener fragmentInterfaceListener;
 
     public interface OnMainViewsClickListener {
+
         void onDeleteClicked();
+
         void onPriorityButtonClicked(Card.CardPriority cardPriority);
+
         void onStatusButtonClicked(Card.CardStatus cardStatus);
     }
+
+    // endregion
+
 }
 
-
-/********if (id == R.id.nav_camera) {
- // Handle the camera action
- } else if (id == R.id.nav_gallery) {
-
- }
- //else if (id == R.id.nav_slideshow) {
- //} else if (id == R.id.nav_manage) {
- // }
- else if (id == R.id.nav_share) {
-
- } else if (id == R.id.nav_send) {
-
- }*********/

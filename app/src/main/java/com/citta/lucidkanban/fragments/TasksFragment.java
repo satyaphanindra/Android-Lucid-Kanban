@@ -70,6 +70,7 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
     }
 
     private void updateItemsListAndNotifyAdapter(Boolean notify) {
+
         if(prioritySelected != null)
             itemList = TaskManager.getInstance().getItemsOfPriority(prioritySelected);
 
@@ -81,6 +82,8 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
         if(notify)
             tasksRecyclerView.getAdapter().notifyDataSetChanged();
     }
+
+
 
     private void initializeRecyclerView() {
 
@@ -97,6 +100,7 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
     public void onDeleteClicked() {
         updateItemsListAndNotifyAdapter(true);
     }
+
 
     @Override
     public void onPriorityButtonClicked(Card.CardPriority cardPriority) {

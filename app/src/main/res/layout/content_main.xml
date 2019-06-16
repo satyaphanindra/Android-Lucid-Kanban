@@ -12,19 +12,19 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
         android:alpha="0.8"
-        android:padding="@dimen/element_spacing_medium"
-        android:orientation="vertical">
+        android:background="@color/colorPrimary"
+        android:orientation="vertical"
+        android:padding="@dimen/element_spacing_medium">
 
         <TextView
             android:id="@+id/inner_welcome_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_medium"
             android:fontFamily="@font/roboto_bold"
+            android:text="@string/main_welcome_title"
             android:textColor="@color/jetBlack"
-            android:text="@string/main_welcome_title" />
+            android:textSize="@dimen/text_size_medium" />
 
 
     </LinearLayout>
@@ -32,10 +32,10 @@
 
     <FrameLayout
         android:id="@+id/fragment_container"
-        android:layout_marginTop="@dimen/element_spacing_micro"
-        android:layout_below="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/title"
+        android:layout_marginTop="@dimen/element_spacing_micro">
 
     </FrameLayout>
 

@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -34,16 +35,14 @@ import com.citta.lucidkanban.model.Card;
 import com.citta.lucidkanban.model.Task;
 
 import java.util.Calendar;
-import java.util.List;
 import java.util.UUID;
 
+import static com.citta.lucidkanban.R.drawable.rounded_background;
 import static com.citta.lucidkanban.fragments.TasksFragment.EXISTING_ID;
 
 public class TaskDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener,
         DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-    private Spinner taskStatusDropdownBar, taskPrioriyDropdownBar;
-    /*private static final String[] paths = {"NONE", "TODO", "IN PROGRESS", "COMPLETED"};
-    private static final String[] priority = {"LOW", "MEDIUM","HIGH"};*/
+    private Spinner taskStatusDropdownBar, taskPriorityDropdownBar;
     private ImageView taskImage, closeTask, saveTask, taskDateTimePicker, editTask, displayImage;
     private TextView taskTitle, taskDescription, taskDate, taskTime;
     private Task itemTask = null;
@@ -51,11 +50,11 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
     private String timeSelected;
     private StringBuilder dateSelected;
     private int REQUEST_CAMERA = 1, SELECT_FILE = 0;
+    private LinearLayout spinnerStatusLayout, spinnerPriorityLayout;
 
 
     private String existingTaskId = null;
     private Boolean isUserClickedExistingTask = false;
-//    private int yearFinal, monthFinal, dayFinal, hoursFinal, minuteFinal;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,13 +72,15 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
         taskDescription = findViewById(R.id.task_description_view);
         taskDateTimePicker = findViewById(R.id.date_time_bar);
         taskStatusDropdownBar = (Spinner) findViewById(R.id.task_status_dropdown);
-        taskPrioriyDropdownBar = (Spinner) findViewById(R.id.task_priority_dropdown);
+        taskPriorityDropdownBar = (Spinner) findViewById(R.id.task_priority_dropdown);
         saveTask = findViewById(R.id.save_task_bar);
         closeTask = findViewById(R.id.close_task_bar);
         editTask = findViewById(R.id.edit_task_bar);
         taskDate = findViewById(R.id.task_date_view);
         taskTime = findViewById(R.id.task_time_view);
         displayImage = (ImageView) findViewById(R.id.selected_image);
+        spinnerStatusLayout = (LinearLayout) findViewById(R.id.spinner_status);
+        spinnerPriorityLayout = (LinearLayout) findViewById(R.id.spinner_priotity);
 
         initSpinner();
 
@@ -103,12 +104,27 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                 // TODO date and others
                 String title = taskTitle.getText().toString();
                 String description = taskDescription.getText().toString();
-                Card.CardPriority priority = (Card.CardPriority) taskPrioriyDropdownBar.getSelectedItem();
+                String date = taskDate.getText().toString();
+                String time = taskTime.getText().toString();
+                Card.CardPriority priority = (Card.CardPriority) taskPriorityDropdownBar.getSelectedItem();
                 Card.CardStatus status = (Card.CardStatus) taskStatusDropdownBar.getSelectedItem();
 
-                if ((title.isEmpty()) || (description.isEmpty())) {
-                    Toast.makeText(TaskDetailActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
-                    return;
+                if ((title.isEmpty()) || (description.isEmpty()) || (date.isEmpty()) || (time.isEmpty())) {
+
+                    if ((title.isEmpty()) || (description.isEmpty())) {
+
+                        Toast.makeText(TaskDetailActivity.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else if (date.isEmpty()) {
+
+                        Toast.makeText(TaskDetailActivity.this, "Please select Date and Time", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else {
+
+                        Toast.makeText(TaskDetailActivity.this, "Please select Time", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                 }
 
                 if (existingTaskId != null) {
@@ -224,7 +240,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                 fieldEditMode(taskTitle, true);
                 fieldEditMode(taskDescription, true);
                 fieldEditMode(taskStatusDropdownBar, true);
-                fieldEditMode(taskPrioriyDropdownBar, true);
+                fieldEditMode(taskPriorityDropdownBar, true);
                 fieldEditMode(taskImage, true);
                 fieldEditMode(taskDateTimePicker, true);
 
@@ -237,7 +253,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
             fieldEditMode(taskTitle, false);
             fieldEditMode(taskDescription, false);
             fieldEditMode(taskStatusDropdownBar, false);
-            fieldEditMode(taskPrioriyDropdownBar, false);
+            fieldEditMode(taskPriorityDropdownBar, false);
             fieldEditMode(taskImage, false);
             fieldEditMode(taskDateTimePicker, false);
 
@@ -254,40 +270,48 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
         if (itemTask == null) return;
 
-        // TODO date etc
         taskTitle.setText(itemTask.taskTitle);
         taskDescription.setText(itemTask.taskDescription);
         taskDate.setText(itemTask.taskDate);
         taskTime.setText(itemTask.taskTime);
-        taskPrioriyDropdownBar.setSelection(TaskManager.getInstance().getPriorityNumber(itemTask.cardPriority));
+        taskPriorityDropdownBar.setSelection(TaskManager.getInstance().getPriorityNumber(itemTask.cardPriority));
         taskStatusDropdownBar.setSelection(TaskManager.getInstance().getStatusNumber(itemTask.cardStatus));
     }
 
     //Todo complex
-    public void fieldEditMode(View id, Boolean isNonEditMode) {
+    public void fieldEditMode(View id, Boolean isEditMode) {
         if (id == taskTitle || id == taskDescription) {
-            id.setFocusable(isNonEditMode);
-
-            id.setEnabled(isNonEditMode);
-            id.setClickable(isNonEditMode);
-            id.setFocusableInTouchMode(isNonEditMode);
+            id.setFocusable(isEditMode);
+            id.setEnabled(isEditMode);
+            id.setClickable(isEditMode);
+            id.setFocusableInTouchMode(isEditMode);
             id.requestFocus();
 
-            if (!isNonEditMode) {
-                id.setBackgroundResource(R.color.verylightGray);
-            } else {
+            if (!isEditMode) {
                 id.setBackgroundResource(R.color.white);
-            }
-        } else if (id == taskStatusDropdownBar || id == taskPrioriyDropdownBar) {
-            id.setEnabled(isNonEditMode);
+                id.setBackgroundResource(rounded_background);
 
-            if (!isNonEditMode) {
-                id.setBackgroundResource(R.color.verylightGray);
             } else {
+                id.setBackgroundResource(R.color.verylightGray);
+                id.setBackgroundResource(rounded_background);
+
+
+            }
+        } else if (id == taskStatusDropdownBar || id == taskPriorityDropdownBar) {
+            id.setEnabled(isEditMode);
+
+            if (!isEditMode) {
                 id.setBackgroundResource(R.color.white);
+                id.setBackgroundResource(rounded_background);
+            } else {
+                spinnerStatusLayout.setBackgroundResource(R.color.verylightGray);
+                spinnerPriorityLayout.setBackgroundResource(R.color.verylightGray);
+                id.setBackgroundResource(R.color.verylightGray);
+                id.setBackgroundResource(rounded_background);
+
             }
         } else if (id == taskImage || id == taskDateTimePicker) {
-            id.setEnabled(isNonEditMode);
+            id.setEnabled(isEditMode);
         }
     }
 
@@ -358,8 +382,8 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                 android.R.layout.simple_spinner_item, Card.CardPriority.values());
 
         adapterCardPriority.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        taskPrioriyDropdownBar.setAdapter(adapterCardPriority);
-        taskPrioriyDropdownBar.setOnItemSelectedListener(this);
+        taskPriorityDropdownBar.setAdapter(adapterCardPriority);
+        taskPriorityDropdownBar.setOnItemSelectedListener(this);
     }
 
     @Override

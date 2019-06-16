@@ -22,8 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_medium"
-            android:text="Title"
             android:maxLines="1"
+            android:text="Title"
             android:textColor="@color/jetBlack"
             android:textSize="@dimen/text_size_medium" />
 
@@ -33,8 +33,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/element_spacing_micro"
             android:fontFamily="@font/roboto_light"
-            android:text="description"
             android:maxLines="2"
+            android:text="description"
             android:textColor="@color/jetBlack"
             android:textSize="@dimen/text_size_small" />
 

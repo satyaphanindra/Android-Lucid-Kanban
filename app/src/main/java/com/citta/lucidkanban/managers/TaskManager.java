@@ -103,6 +103,8 @@ public class TaskManager {
         tasksList.clear();
     }
 
+    public int totalNoOfTasks() { return tasksList.size(); }
+
     public void saveTask(Context context) {
         Storage storage = new Storage(context);
         storage.store(tasksList, "TasksFile", Storage.Directory.Documents);
