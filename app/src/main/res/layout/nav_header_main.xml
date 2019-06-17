@@ -67,13 +67,6 @@
                     android:paddingStart="4dp"
                     android:textColor="@color/white" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/total_tasks"
-                    android:paddingStart="4dp"
-                    android:text="Tasks"
-                    android:textColor="@color/jetBlack" />
             </RelativeLayout>
         </LinearLayout>
 
