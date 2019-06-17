@@ -9,7 +9,7 @@
     <color name="lightGray">#D3D3D3</color>
     <color name="lightPurple">#C4AAD9</color>
     <color name="verylightGray">#16010909</color>
-    <color name="todoColor">#5E85F7</color>
+    <color name="todoColor">#FF5E85F7</color>
     <color name="progressColor">#FCB855</color>
     <color name="completedColor">#70CC75</color>
 

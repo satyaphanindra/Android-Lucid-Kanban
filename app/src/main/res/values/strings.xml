@@ -18,11 +18,11 @@
     <string name="task_status">Status:</string>
     <string name="date_time"><![CDATA[Date & Time:]]></string>
     <string name="welcome_title_tasks">Welcome to Lucid Tasks!</string>
-    <string name="welcome_title_low">Check your Low Priority Tasks!</string>
-    <string name="welcome_title_medium">Check your Low Medium Tasks!</string>
-    <string name="welcome_title_high">Check your Low High Tasks!</string>
+    <string name="welcome_title_low">Low Priority Tasks!</string>
+    <string name="welcome_title_medium">Medium Priority Tasks!</string>
+    <string name="welcome_title_high">High Priority Tasks!</string>
     <string name="welcome_title_board">Welcome to Lucid Kanban Board!</string>
-    <string name="welcome_title_todo">Check your To-Do Tasks!</string>
-    <string name="welcome_title_inprogress">Check your In Progress Tasks!</string>
-    <string name="welcome_title_completed">Check your Completed Tasks!</string>
+    <string name="welcome_title_todo">To-Do Tasks!</string>
+    <string name="welcome_title_inprogress">In Progress Tasks!</string>
+    <string name="welcome_title_completed">Completed Tasks!</string>
 </resources>
