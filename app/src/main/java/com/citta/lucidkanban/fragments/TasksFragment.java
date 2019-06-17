@@ -3,6 +3,7 @@ package com.citta.lucidkanban.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.citta.lucidkanban.activities.TaskDetailActivity;
 import com.citta.lucidkanban.managers.TaskManager;
 import com.citta.lucidkanban.model.Card;
 import com.citta.lucidkanban.model.Task;
+import com.citta.lucidkanban.utils.BitmapTools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -221,7 +223,8 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
         public void hydrate(Task task) {
             if (task.taskImagePath != null) {
                 taskImage.setVisibility(View.VISIBLE);
-                taskImage.setImageBitmap(BitmapFactory.decodeFile(task.taskImagePath));
+                //taskImage.setImageBitmap(BitmapFactory.decodeFile(task.taskImagePath));
+                taskImage.setImageBitmap(BitmapTools.decodeSampledBitmapFromPath(task.taskImagePath, 100, 100));
             }
             else {
                 taskImage.setVisibility(View.GONE);

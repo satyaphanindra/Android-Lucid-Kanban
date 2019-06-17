@@ -40,6 +40,7 @@ import com.citta.lucidkanban.R;
 import com.citta.lucidkanban.managers.TaskManager;
 import com.citta.lucidkanban.model.Card;
 import com.citta.lucidkanban.model.Task;
+import com.citta.lucidkanban.utils.BitmapTools;
 
 import java.io.File;
 import java.util.Calendar;
@@ -283,13 +284,17 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
 
         if (itemTask == null) return;
 
+        dateSelected = itemTask.taskDate;
+        timeSelected = itemTask.taskTime;
+        selectedImagePath = itemTask.taskImagePath;
+
         taskTitle.setText(itemTask.taskTitle);
         taskDescription.setText(itemTask.taskDescription);
-        taskDate.setText(itemTask.taskDate);
-        taskTime.setText(itemTask.taskTime);
+        taskDate.setText(dateSelected);
+        taskTime.setText(timeSelected);
         taskPriorityDropdownBar.setSelection(TaskManager.getInstance().getPriorityNumber(itemTask.cardPriority));
         taskStatusDropdownBar.setSelection(TaskManager.getInstance().getStatusNumber(itemTask.cardStatus));
-        displayImage.setImageBitmap(BitmapFactory.decodeFile(itemTask.taskImagePath));
+        displayImage.setImageBitmap(BitmapTools.decodeSampledBitmapFromPath(selectedImagePath, 100, 100));
     }
 
     //Todo complex
@@ -412,7 +417,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                 cursor.close();
                 // Set the Image in ImageView after decoding the String
                 selectedImagePath = imgDecodableString;
-                displayImage.setImageBitmap(BitmapFactory.decodeFile(selectedImagePath));
+                displayImage.setImageBitmap(BitmapTools.decodeSampledBitmapFromPath(selectedImagePath, 100, 100));
             }
         }
     }
