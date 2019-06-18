@@ -157,7 +157,7 @@ public class TaskDetailActivity extends AppCompatActivity implements AdapterView
                 }
 
                 TaskManager.getInstance().saveTask(LucidApplication.getInstance());
-                Toast.makeText(TaskDetailActivity.this, "Saved\n" + "Task Id: " + itemTask.taskId, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TaskDetailActivity.this, "Task saved!"/* + itemTask.taskId*/, Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
