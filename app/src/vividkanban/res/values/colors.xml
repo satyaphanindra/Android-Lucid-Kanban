@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#283593</color>
+    <color name="colorPrimaryDark">#001064</color>
+    <color name="colorAccent">#5f5fc4</color>
+
+    <color name="jetBlack">#0a0a0a</color>
+    <color name="white">#FFFFFF</color>
+    <color name="lightGray">#D3D3D3</color>
+    <color name="lightPurple">#C4AAD9</color>
+    <color name="verylightGray">#16010909</color>
+    <color name="todoColor">#87A2F0</color>
+    <color name="progressColor">#F8C67D</color>
+    <color name="completedColor">#96DD9A</color>
+
+</resources>
