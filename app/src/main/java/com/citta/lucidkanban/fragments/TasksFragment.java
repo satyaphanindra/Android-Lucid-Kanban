@@ -35,15 +35,26 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 
 public class TasksFragment extends Fragment implements MainActivity.OnMainViewsClickListener {
 
+
+    //
+    // region properties
+    //
+
     private RecyclerView tasksRecyclerView;
     private Context taskFragmentContext;
     private List<Task> itemList = new ArrayList<>();
     private Card.CardPriority prioritySelected = null;
     private Card.CardStatus statusSelected = null;
-
     public static final String EXISTING_ID = "existingTaskId";
     public static final String IS_EXISTING_TASK = "isUserClickedExistingTask";
     private boolean isKanbanPage = false;
+
+    //  endregion
+
+
+    //
+    // region helpers
+    //
 
     public static TasksFragment newInstance(boolean isKanbanPage) {
         TasksFragment myFragment = new TasksFragment();
@@ -54,6 +65,25 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
 
         return myFragment;
     }
+
+    private void updateItemsListAndNotifyAdapter(Boolean notify) {
+        if(prioritySelected != null && !isKanbanPage)
+            itemList = TaskManager.getInstance().getItemsOfPriority(prioritySelected);
+        else if(statusSelected!= null && isKanbanPage)
+            itemList = TaskManager.getInstance().getItemsOfStatus(statusSelected);
+        else
+            itemList = TaskManager.getInstance().tasksList;
+
+        if(notify)
+            tasksRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+    //  endregion
+
+
+    //
+    // region overrides
+    //
 
 
     @Override
@@ -94,31 +124,6 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
         updateItemsListAndNotifyAdapter(true);
     }
 
-    private void updateItemsListAndNotifyAdapter(Boolean notify) {
-        if(prioritySelected != null && !isKanbanPage)
-            itemList = TaskManager.getInstance().getItemsOfPriority(prioritySelected);
-        else if(statusSelected!= null && isKanbanPage)
-            itemList = TaskManager.getInstance().getItemsOfStatus(statusSelected);
-        else
-            itemList = TaskManager.getInstance().tasksList;
-
-        if(notify)
-            tasksRecyclerView.getAdapter().notifyDataSetChanged();
-    }
-
-
-
-    private void initializeRecyclerView() {
-
-        // Create an instance of SectionedRecyclerViewAdapter
-        final SectionedRecyclerViewAdapter sectionAdapter = new SectionedRecyclerViewAdapter();
-
-        // Add your Sections
-        sectionAdapter.addSection(new MySection());
-        tasksRecyclerView.setLayoutManager(new LinearLayoutManager(taskFragmentContext, LinearLayoutManager.VERTICAL, false));
-        tasksRecyclerView.setAdapter(sectionAdapter);
-    }
-
     @Override
     public void onDeleteClicked() {
         updateItemsListAndNotifyAdapter(true);
@@ -144,6 +149,26 @@ public class TasksFragment extends Fragment implements MainActivity.OnMainViewsC
         }
         updateItemsListAndNotifyAdapter(true);
     }
+
+    //  endregion
+
+
+    //
+    // region initializations
+    //
+
+    private void initializeRecyclerView() {
+
+        // Create an instance of SectionedRecyclerViewAdapter
+        final SectionedRecyclerViewAdapter sectionAdapter = new SectionedRecyclerViewAdapter();
+
+        // Add your Sections
+        sectionAdapter.addSection(new MySection());
+        tasksRecyclerView.setLayoutManager(new LinearLayoutManager(taskFragmentContext, LinearLayoutManager.VERTICAL, false));
+        tasksRecyclerView.setAdapter(sectionAdapter);
+    }
+
+    //  endregion
 
 
     //

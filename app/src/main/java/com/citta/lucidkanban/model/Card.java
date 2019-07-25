@@ -11,7 +11,7 @@ public class Card implements Serializable {
  public CardStatus cardStatus;
 
 
- public Card(Member member, Task task, CardPriority cardPriority,
+ private Card(Member member, Task task, CardPriority cardPriority,
              CardStatus cardStatus, Boolean isCardAssigned)
  {
      this.member = member;

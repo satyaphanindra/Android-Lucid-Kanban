@@ -15,7 +15,7 @@ public class Task implements Serializable {
     public CardStatus cardStatus = CardStatus.TODO;
     public String taskImagePath = null;
 
-    public Task(String taskId, String taskTitle, String taskDescription, StringBuilder taskDate, String taskTime,
+    private Task(String taskId, String taskTitle, String taskDescription, StringBuilder taskDate, String taskTime,
                 CardPriority cardPriority, CardStatus cardStatus, String taskImagePath)
     {
         this.taskId = taskId;

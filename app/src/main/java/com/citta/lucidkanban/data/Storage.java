@@ -8,13 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-/**
- * Package: com.citta.lucidkanban.data
- * User: Satya
- * Date: 2019-06-02
- * Time: 10:14
- */
 public class Storage {
 
     private Context context;

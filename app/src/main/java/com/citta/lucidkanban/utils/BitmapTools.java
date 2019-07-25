@@ -4,12 +4,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-/**
- * Package: com.citta.lucidkanban.utils
- * User: Satya
- * Date: 2019-06-16
- * Time: 21:32
- */
 public class BitmapTools {
 
     public static Bitmap decodeSampledBitmapFromPath(String path,

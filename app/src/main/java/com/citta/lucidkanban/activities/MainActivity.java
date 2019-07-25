@@ -33,8 +33,20 @@ import static com.citta.lucidkanban.R.layout.activity_main;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
+
+    //
+    // region properties
+    //
+
     private TextView welcomeTitle;
     private TextView totalNoOfTasks;
+
+    //  endregion
+
+
+    //
+    // region overrides
+    //
 
 
     @Override
@@ -155,6 +167,12 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //  endregion
+
+
+    //
+    // region helpers
+    //
 
     @SuppressLint("ResourceAsColor")
     private void setNavItem(int id) {
@@ -268,6 +286,12 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    //  endregion
+
+    //
+    // region outer structure
+    //
+
     public OnMainViewsClickListener fragmentInterfaceListener;
 
     public interface OnMainViewsClickListener {
@@ -279,7 +303,10 @@ public class MainActivity extends AppCompatActivity
         void onStatusButtonClicked(Card.CardStatus cardStatus);
     }
 
-    // endregion
+    //  endregion
+
+
+
 
 }
 

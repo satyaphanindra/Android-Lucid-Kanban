@@ -8,7 +8,7 @@ public class Member implements Serializable {
     public String memberEmployeeId;
     public int memberImage;
 
-    public Member(
+    private Member(
             String memberName,
             String memberEmail,
             String memberEmployeeId,
